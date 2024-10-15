@@ -1,0 +1,1 @@
+{"root":["./src/main.tsx","./src/routetree.gen.ts","./src/vite-env.d.ts","./src/components/grid.config.form.tsx","./src/components/grid.tsx","./src/routes/__root.tsx","./src/routes/index.lazy.tsx","./src/stores/grid.ts","./src/utils/grid.ts"],"version":"5.6.3"}

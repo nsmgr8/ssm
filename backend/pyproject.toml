@@ -1,0 +1,16 @@
+[project]
+name = "elliptic-ssm"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[standard]>=0.115.0",
+    "numpy>=2.1.2",
+    "tqdm>=4.66.5",
+    "websockets>=13.1",
+]
+
+[tool.ruff]
+# Allow lines to be as long as 120.
+line-length = 120

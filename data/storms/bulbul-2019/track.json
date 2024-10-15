@@ -1,0 +1,27 @@
+{
+  "name": "bulbul-2019",
+  "max_wind_speed": 45,
+  "max_radius": 74,
+  "track": [
+    { "time": "2019-11-07T00:00", "latitude": 14.5, "longitude": 90.0 },
+    { "time": "2019-11-07T06:00", "latitude": 15.0, "longitude": 88.7 },
+    { "time": "2019-11-07T12:00", "latitude": 16.0, "longitude": 88.2 },
+    { "time": "2019-11-07T18:00", "latitude": 16.2, "longitude": 87.7 },
+    { "time": "2019-11-08T00:00", "latitude": 16.9, "longitude": 87.5 },
+    { "time": "2019-11-08T06:00", "latitude": 17.7, "longitude": 87.8 },
+    { "time": "2019-11-08T12:00", "latitude": 18.7, "longitude": 88.0 },
+    { "time": "2019-11-08T18:00", "latitude": 19.4, "longitude": 87.8 },
+    { "time": "2019-11-09T00:00", "latitude": 20.1, "longitude": 87.9 },
+    { "time": "2019-11-09T06:00", "latitude": 20.7, "longitude": 87.6 },
+    { "time": "2019-11-09T12:00", "latitude": 21.2, "longitude": 87.9 },
+    { "time": "2019-11-09T18:00", "latitude": 21.6, "longitude": 88.9 },
+    { "time": "2019-11-10T00:00", "latitude": 21.9, "longitude": 89.9 },
+    { "time": "2019-11-10T06:00", "latitude": 22.2, "longitude": 89.9 }
+  ],
+  "notes": {
+    "max_wind_speed": {
+      "range": [120, 130],
+      "reference": "https://reliefweb.int/report/bangladesh/bangladesh-cyclone-bulbul-final-report-operation-dref-n-mdrbd023"
+    }
+  }
+}
