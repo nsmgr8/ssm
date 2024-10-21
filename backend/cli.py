@@ -26,7 +26,6 @@ if __name__ == "__main__":
         dict(include=IncludeFlags(tide=True, surge=True), position=0),
         dict(include=IncludeFlags(tide=True, surge=False), position=1),
         dict(include=IncludeFlags(tide=False, surge=True), position=2),
-        dict(include=IncludeFlags(tide=False, surge=False), position=3),
     ]
     with Pool(len(options)) as pool:
         for _ in pool.imap(run, options):

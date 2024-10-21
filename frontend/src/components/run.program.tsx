@@ -3,8 +3,6 @@ import {gridConfig, gridPoints} from '../stores/grid'
 import {stormData} from '../stores/storm'
 import {api} from '../utils/api'
 import {FormInput} from './form.input'
-import {useNavigate, UseNavigateResult} from '@tanstack/react-router'
-import {RunConfig} from '../stores/run'
 
 const runParams = [
   {name: 'dt', label: 'Time interval (seconds)', value: 60},
@@ -13,9 +11,8 @@ const runParams = [
 ]
 
 export const RunProgram = () => {
-  const navigate = useNavigate()
   return (
-    <form onSubmit={(e) => run(e, navigate)}>
+    <form onSubmit={(e) => run(e)}>
       <fieldset>
         {runParams.map((row, idx) => (
           <FormInput {...row} key={idx} />
@@ -26,15 +23,19 @@ export const RunProgram = () => {
   )
 }
 
+type RunConfig = {
+  dt: number
+  tide_amplitude: number
+  tide_phase: number
+}
 type RunFormData = Iterable<[keyof RunConfig, string]>
 
-const run = async (event: FormEvent<HTMLFormElement>, navigate: UseNavigateResult<string>) => {
+const run = async (event: FormEvent<HTMLFormElement>) => {
   event.preventDefault()
   const formData = new FormData(event.currentTarget) as unknown as RunFormData
   const data = {} as RunConfig
   ;[...formData].forEach(([name, value]) => (data[name] = +value))
-  const resp: any = await api
+  await api
     .url('/run')
     .post({grid: gridPoints.value, grid_params: gridConfig.value, run_params: data, storm: stormData.value})
-  // if (resp.status === 'started') navigate({to: '/zeta'})
 }

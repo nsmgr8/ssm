@@ -13,17 +13,6 @@ export const selectedPoint = signal<{row: number; column: number}>({
 
 export const showUVZ = signal(false)
 
-export const gridFields = {
-  m: {label: 'Number of rows (m)', default: 60},
-  n: {label: 'Number of columns (n)', default: 61},
-  dr: {label: 'Radial Interval (meters)', default: 10_000},
-  e: {label: 'Ellipse eccentricity (0 <= e < 1)', default: 0.5},
-  alpha: {label: 'Starting angle (degree)', default: -60},
-  beta: {label: 'Stopping angle (degree)', default: 30},
-  lng: {label: 'Origin longitude (degree)', default: 91.4},
-  lat: {label: 'Origin latitude (degree)', default: 23},
-} as const
-
 export type GridConfig = {
   m: number
   n: number

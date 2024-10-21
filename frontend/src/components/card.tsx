@@ -1,4 +1,4 @@
-import {ComponentProps, ReactElement, ReactHTMLElement} from 'react'
+import {ComponentProps} from 'react'
 
 type CardProps = ComponentProps<'div'> & {
   top?: number

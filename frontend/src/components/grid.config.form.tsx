@@ -1,4 +1,4 @@
-import {ChangeEvent, FormEvent} from 'react'
+import {FormEvent} from 'react'
 import {GridConfig, gridConfig, gridPoints, setupGrid, showUVZ} from '../stores/grid'
 import {LoadFile} from './load.file'
 import {api} from '../utils/api'

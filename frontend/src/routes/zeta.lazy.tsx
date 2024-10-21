@@ -1,6 +1,6 @@
 import {createLazyFileRoute} from '@tanstack/react-router'
-import {ZetaMap} from '../components/zeta.map'
+import {ZetaMapPage} from '../components/zeta.page'
 
 export const Route = createLazyFileRoute('/zeta')({
-  component: ZetaMap,
+  component: ZetaMapPage,
 })

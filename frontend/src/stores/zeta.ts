@@ -1,65 +1,77 @@
-import {ContourLayer, ContourLayerProps, HeatmapLayer} from '@deck.gl/aggregation-layers'
+import {ContourLayer, ContourLayerProps} from '@deck.gl/aggregation-layers'
 import {computed, signal} from '@preact/signals-react'
 import {gridMatrix} from './grid'
-import {point} from '@turf/turf'
+import {featureCollection, point} from '@turf/turf'
+import {interpolateYlOrRd} from 'd3-scale-chromatic'
 
 type ZetaData = {
   data: [row: number, column: number, value: number][]
   storm_location: [lng: number, lat: number]
   time: number
 }
+type Zetas = {
+  both: ZetaData[]
+  surge: ZetaData[]
+  tide: ZetaData[]
+}
+export type ZetaKey = keyof Zetas
 
-export const zetas = signal<ZetaData[]>([])
+const initialZeta = {both: [], surge: [], tide: []}
+export const resetZeta = () => {
+  zetas.value = initialZeta
+  zetaMin.value = 10000
+  zetaMax.value = -10000
+  currentZetaIdx.value = 0
+}
+
+export const zetas = signal<Zetas>(initialZeta)
 export const currentZetaIdx = signal(0)
-export const currentStorm = signal<[number, number]>([0, 0])
+export const zetaMin = signal(0)
+export const zetaMax = signal(0)
+export const zetaDt = signal(0)
 
-export const currentStormGeoJSON = computed(() => point(currentStorm.value))
+export const stormStartedAt = signal(0)
+export const currentStormTime = computed(
+  () => new Date(stormStartedAt.value + currentZetaIdx.value * zetaDt.value * 1000)
+)
+export const currentStorm = computed(() =>
+  zetas.value.both.length > currentZetaIdx.value ? zetas.value.both[currentZetaIdx.value].storm_location : []
+)
+export const currentStormGeoJSON = computed(() =>
+  currentStorm.value.length === 2 ? point(currentStorm.value) : featureCollection([])
+)
 export const zetaLayer = computed(() => {
-  let data: any = []
-  if (zetas.value.length > currentZetaIdx.value) {
-    const zeta = zetas.value[currentZetaIdx.value]
-    data = zeta.data
-    currentStorm.value = zeta.storm_location
-  } else {
-    currentStorm.value = [0, 0]
-    return []
-  }
-  // return [new HeatmapLayer({
-  //     data,
-  //     id: 'zeta-heatmap-layer',
-  //     pickable: true,
-  //     getPosition: d => gridMatrix.value[d[0]][d[1]],
-  //     getWeight: d => d[2],
-  //     radiusPixels: 30,
-  //     intensity: 10,
-  //     threshold: 0.01,
-  //     aggregation: 'MEAN'
-  //   })]
-  return [
-    new ContourLayer({
-      data,
-      id: 'zeta-contour',
-      getPosition: (d) => gridMatrix.value[d[0]][d[1]],
-      getWeight: (d) => d[2],
-      pickable: true,
-      aggregation: 'MEAN',
-      updateTriggers: {
-        getWeight: currentZetaIdx.value,
-      },
-      contours: BANDS,
-      cellSize: 8000,
-    }),
-  ]
+  const layers: any = {}
+  ;(['both', 'surge', 'tide'] as ZetaKey[]).forEach((key) => {
+    if (zetas.value[key].length > currentZetaIdx.value) {
+      const {data} = zetas.value[key][currentZetaIdx.value]
+      layers[key] = new ContourLayer({
+        data,
+        id: 'zeta-contour',
+        getPosition: (d) => gridMatrix.value[d[0]][d[1]],
+        getWeight: (d) => d[2] - zetaMin.value,
+        pickable: true,
+        aggregation: 'MEAN',
+        contours: getBands(),
+        cellSize: 17000,
+      })
+    }
+  })
+  return layers
 })
 
-const BANDS: ContourLayerProps['contours'] = [
-  {threshold: [-3, -2], color: [255, 255, 178]},
-  {threshold: [-2, -1], color: [254, 204, 92]},
-  {threshold: [-1, -0.1], color: [253, 141, 60]},
-  {threshold: [-0.1, 0.1], color: [0, 0, 0, 0]},
-  {threshold: [0.1, 1], color: [240, 59, 32]},
-  {threshold: [1, 2], color: [189, 0, 38]},
-  {threshold: [2, 3], color: [159, 0, 80]},
-  {threshold: [3, 4], color: [159, 50, 80]},
-  {threshold: [4, 5], color: [159, 100, 80]},
-]
+export function getBands() {
+  const nBands = 10
+  const dVal = (zetaMax.value - zetaMin.value) / (nBands + 1)
+  const BANDS: ContourLayerProps['contours'] = []
+  for (let i = 0; i <= nBands; i++) {
+    const low = i * dVal + 0.1
+    const high = low + dVal
+    const color = interpolateYlOrRd(i / nBands)
+      .replace(/(rgb.)|([^\d]*$)/g, '')
+      .split(',')
+      .map((x) => +x)
+    BANDS.push({threshold: [low, high], color})
+  }
+  return BANDS
+}

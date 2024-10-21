@@ -49,9 +49,9 @@ class EllipticSurgeModel:
 
         storm_loc = []
         storm_locations = []
-        name = progress_desc(include)
+        self.name = progress_desc(include)
 
-        for count in tqdm(range(self.n_steps), desc=name, position=position):
+        for count in tqdm(range(self.n_steps), desc=self.name, position=position):
             seconds = count * self.dt
 
             self.update_elevation()
@@ -78,27 +78,43 @@ class EllipticSurgeModel:
             # if (courant := get_max_courant()) > 1:
             #     print(f'Courant number is high: {courant} at step {i}')
 
-            if count % 60 == 0:
-                data = []
-                for i in range(self.m):
-                    for j in range(self.n):
-                        data.append((i, j, self.zeta2[i, j]))
-                self.zetas.append(
-                    {
-                        "time": seconds,
-                        "data": data,
-                        "storm_location": storm_loc,
-                    }
-                )
+            if count % 60 == 0 or count == self.n_steps - 1:
+                self.store_zetas(seconds, storm_loc)
+                self.notify(count)
 
-                with suppress(ConnectionRefusedError):
-                    with wsclient.connect("ws://localhost:8000/ws") as ws:
-                        ws.send(json.dumps(dict(name=name, current=count, total=self.n_steps, state="running")))
+        self.notify(self.n_steps)
+        self.save_output(include)
 
+    def store_zetas(self, seconds, storm_loc):
+        data = []
+        for i in range(self.m):
+            for j in range(self.n):
+                if self.grid[i][j] == 0:
+                    continue
+                data.append((i, j, self.zeta2[i, j]))
+        self.zetas.append(
+            {
+                "time": seconds,
+                "data": data,
+                "storm_location": storm_loc,
+            }
+        )
+
+    def notify(self, current):
         with suppress(ConnectionRefusedError):
             with wsclient.connect("ws://localhost:8000/ws") as ws:
-                ws.send(json.dumps(dict(name=name, current=self.n_steps, total=self.n_steps, state="complete")))
+                ws.send(
+                    json.dumps(
+                        dict(
+                            name=self.name,
+                            current=current,
+                            total=self.n_steps,
+                            state="complete" if current == self.n_steps else "running",
+                        )
+                    )
+                )
 
+    def save_output(self, include):
         output_name_parts = ["{name}", "json"]
         if include.tide:
             output_name_parts.insert(1, "tide")
@@ -123,34 +139,13 @@ class EllipticSurgeModel:
         }
         with open(output_filename("coasts"), "w") as fh:
             output["coasts"] = self.test_zetas
-            json.dump(output, fh, indent=2)
+            json.dump(output, fh)
 
         with open(output_filename("zetas"), "w") as fh:
             del output["coasts"]
             output["store_dt"] = self.dt * 60
             output["zetas"] = self.zetas
-            json.dump(output, fh, indent=2)
-
-        with open(output_filename("track.interpolated").replace("json", "geojson"), "w") as fp:
-            json.dump(
-                {
-                    "type": "FeatureCollection",
-                    "properties": {},
-                    "features": [
-                        {
-                            "type": "Feature",
-                            "properties": {},
-                            "geometry": {
-                                "type": "Point",
-                                "coordinates": p,
-                            },
-                        }
-                        for p in storm_locations
-                    ],
-                },
-                fp,
-                indent=2,
-            )
+            json.dump(output, fh)
 
     def __init__(
         self,

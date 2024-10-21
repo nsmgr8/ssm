@@ -1,7 +1,7 @@
 import {Card} from './card'
 import {LoadFile} from './load.file'
 import {loadFile} from '../utils/file.load'
-import {selectedPoint, setupGrid} from '../stores/grid'
+import {setupGrid} from '../stores/grid'
 import {stormData} from '../stores/storm'
 import {coastLevelMax, coastLevelMin, Coasts, coasts} from '../stores/coast'
 

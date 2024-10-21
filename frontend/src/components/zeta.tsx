@@ -1,13 +1,8 @@
 import {useEffect} from 'react'
 import {Layer, Source, useMap} from 'react-map-gl/maplibre'
-import {gridLinesGeoJSON, gridMatrix, gridPointsGeoJSON, showUVZ} from '../stores/grid'
+import {gridLinesGeoJSON, gridMatrix} from '../stores/grid'
 import {gridDomain} from '../utils/grid'
 import {useKeyboardSelection} from '../hooks/grid.select'
-
-const emptyGeoJSON = {
-  type: 'FeatureCollection',
-  features: [],
-}
 
 export const Grid = () => {
   const {current: map} = useMap()

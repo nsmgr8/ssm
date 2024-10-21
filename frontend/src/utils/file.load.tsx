@@ -6,13 +6,17 @@ type LoadFileParams = {
 }
 export const loadFile =
   ({init, onLoad}: LoadFileParams) =>
-  ({target: {files}}: ChangeEvent<HTMLInputElement>) => {
+  ({target}: ChangeEvent<HTMLInputElement>) => {
+    const {files} = target
     if (!files?.length) return
 
     init?.()
 
     const readFile = (idx: number) => {
-      if (idx >= files.length) return
+      if (idx >= files.length) {
+        target.value = ''
+        return
+      }
       const reader = new FileReader()
       reader.onload = async (e) => {
         await onLoad(e, idx)

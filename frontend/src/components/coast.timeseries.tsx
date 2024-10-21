@@ -1,6 +1,7 @@
-import {ResponsiveContainer, Text, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line, Label} from 'recharts'
+import {ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line, Label} from 'recharts'
 import {chartData, coastLevelMax, coastLevelMin, coasts} from '../stores/coast'
-import {gridMatrix, selectedPoint} from '../stores/grid'
+import {selectedPoint} from '../stores/grid'
+import {Location} from './location'
 
 export const CoastTimeSeries = () => (
   <>
@@ -68,9 +69,6 @@ export const CoastTimeSeries = () => (
 const Title = () => {
   try {
     const {row, column} = selectedPoint.value
-    const [lng, lat] = gridMatrix.value[row][column]
-    const lngStr = lng > 0 ? 'N' : 'S'
-    const latStr = lat > 0 ? 'E' : 'W'
     let n = 0
     let sum = 0
     coasts.value[row][column].forEach(({both, observed}) => {
@@ -83,7 +81,7 @@ const Title = () => {
     return (
       <>
         <div>
-          Location: {lng.toFixed(2)}&deg;{lngStr}, {lat.toFixed(2)}&deg;{latStr}
+          Location: <Location row={row} column={column} />
         </div>
         <div>
           Grid Point: {row}, {column}
