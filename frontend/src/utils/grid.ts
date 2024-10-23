@@ -74,5 +74,5 @@ export const makeGridGeoJSON = (grid: GridMatrix) => {
       )
     }
   }
-  return featureCollection(features as any, {id: 'elliptic-grid'})
+  return featureCollection(features, {id: 'elliptic-grid'})
 }

@@ -28,22 +28,19 @@ export type GridConfig = {
 
 export type GridPoint = 0 | 1 | 2
 
-export const gridConfig = signal<GridConfig>({
-  m: 60,
-  n: 61,
-  dr: 10_000,
-  e: 0.5,
-  alpha: -60,
-  beta: 30,
-  origin: {
-    longitude: 91.4,
-    latitude: 23,
-  },
-})
+export const resetGrid = () => {
+  gridConfig.value = {} as GridConfig
+  gridPoints.value = []
+  selectedPoint.value = {row: -1, column: -1}
+  selectionMode.value = 'none'
+  showUVZ.value = false
+}
+
+export const gridConfig = signal({} as GridConfig)
+export const gridPoints = signal<GridPoint[][]>([])
 
 export const gridMatrix = computed(() => makeGrid(gridConfig.value))
 export const gridLinesGeoJSON = computed(() => makeGridGeoJSON(gridMatrix.value))
-export const gridPoints = signal<GridPoint[][]>([])
 export const gridPointsGeoJSON = computed(() => {
   const features = []
   for (let i = 0; i < gridConfig.value.m; i++) {
@@ -103,7 +100,7 @@ effect(() => {
   gridPoints.value = points
 })
 
-export async function setupGrid(config: any, grid: any) {
+export async function setupGrid(config: GridConfig, grid: GridPoint[][]) {
   gridConfig.value = config
   await new Promise((resolve) => setTimeout(resolve, 100))
   const points: GridPoint[][] = []

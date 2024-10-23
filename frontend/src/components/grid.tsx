@@ -16,7 +16,7 @@ export const Grid = () => {
     if (gridMatrix.value.length) {
       map?.fitBounds(gridDomain(gridMatrix.value))
     }
-  }, [gridMatrix.value])
+  }, [map])
 
   useKeyboardSelection()
 

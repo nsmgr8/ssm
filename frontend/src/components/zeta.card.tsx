@@ -1,13 +1,13 @@
 import {LoadFile} from './load.file'
-import {setupGrid} from '../stores/grid'
-import {stormData} from '../stores/storm'
+import {GridConfig, GridPoint, setupGrid} from '../stores/grid'
+import {StormData, stormData} from '../stores/storm'
 import {currentZetaIdx, getBands, resetZeta, stormStartedAt, zetaDt, zetaMax, zetaMin, zetas} from '../stores/zeta'
 import {Card} from './card'
 import {loadFile} from '../utils/file.load'
 import {useCallback, useState} from 'react'
 
 export const ZetaCard = () => {
-  const [playTimeout, setPlayTimeout] = useState<any>()
+  const [playTimeout, setPlayTimeout] = useState<ReturnType<typeof setTimeout>>()
   const play = useCallback(() => {
     const run = () => {
       const timeout = setTimeout(() => {
@@ -15,10 +15,9 @@ export const ZetaCard = () => {
         if (currentZetaIdx.value < zetas.value.both.length - 1) run()
       }, 300)
       setPlayTimeout(timeout)
-      return timeout
     }
-    const timeout = run()
-    return () => clearTimeout(timeout)
+    run()
+    return () => clearTimeout(playTimeout)
   }, [playTimeout])
 
   return (
@@ -76,18 +75,31 @@ const nextZeta = (direction: 1 | -1) => () => {
   }
 }
 
+type ZetaRaw = {
+  surge: boolean
+  tide: boolean
+  zetas: {
+    data: [number, number, number][]
+  }[]
+  grid_params: GridConfig
+  grid: GridPoint[][]
+  storm: StormData
+  store_dt: number
+  started_at: string
+}
+
 const loadZeta = loadFile({
   init: resetZeta,
 
   async onLoad(e: ProgressEvent<FileReader>, idx: number) {
-    const {surge, tide, ...data} = JSON.parse(e.target?.result as string)
+    const {surge, tide, ...data} = JSON.parse(e.target?.result as string) as ZetaRaw
     const key = surge && tide ? 'both' : surge ? 'surge' : tide ? 'tide' : null
     if (!key) return
     let [minVal, maxVal] = [zetaMin.value, zetaMax.value]
     data.zetas.forEach(({data: d}) =>
-      d.forEach(([_, __, v]) => {
-        if (v < minVal) minVal = v
-        if (v > maxVal) maxVal = v
+      d.forEach(v => {
+        if (v[2] < minVal) minVal = v[2]
+        if (v[2] > maxVal) maxVal = v[2]
       })
     )
     if (idx === 0) {

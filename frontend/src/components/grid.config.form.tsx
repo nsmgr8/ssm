@@ -16,8 +16,8 @@ export const GridConfigForm = () => (
       <FormInput name="e" value={gridConfig.value.e} label="Ellipse eccentricity (0 <= e < 1)" />
       <FormInput name="alpha" value={gridConfig.value.alpha} label="Start angle (degree)" />
       <FormInput name="beta" value={gridConfig.value.beta} label="Stop angle (degree)" />
-      <FormInput name="origin.longitude" value={gridConfig.value.origin.longitude} label="Origin longitude (degree)" />
-      <FormInput name="origin.latitude" value={gridConfig.value.origin.latitude} label="Origin latitude (degree)" />
+      <FormInput name="origin.longitude" value={gridConfig.value.origin?.longitude} label="Origin longitude (degree)" />
+      <FormInput name="origin.latitude" value={gridConfig.value.origin?.latitude} label="Origin latitude (degree)" />
       <div style={{display: 'flex', justifyContent: 'space-between'}}>
         <input type="submit" value="Update" />
         <button type="button" onClick={save}>

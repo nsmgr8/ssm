@@ -1,6 +1,12 @@
 import {createFileRoute} from '@tanstack/react-router'
-import {GridMap} from '../components/grid.map'
+import {GridPage} from '../components/grid.page'
+import {resetGrid} from '../stores/grid'
+import {resetStorm} from '../stores/storm'
 
 export const Route = createFileRoute('/')({
-  component: GridMap,
+  beforeLoad: () => {
+    resetGrid()
+    resetStorm()
+  },
+  component: GridPage,
 })

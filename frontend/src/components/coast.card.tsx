@@ -63,12 +63,12 @@ const loadObserved = loadFile({
       time: x.timestamp * 1000,
       value: x.sea_level,
     }))
-    const coasts_data: any = {}
+    const coasts_data = {} as Coasts
     Object.entries(coasts.value).forEach(([row, columnData]) => {
-      coasts_data[row] = {}
+      coasts_data[+row] = {}
       Object.entries(columnData).forEach(([column, data]) => {
-        coasts_data[row][column] = data.map((v) => {
-          let observed = values.find((x) => x.time === v.time)
+        coasts_data[+row][+column] = data.map((v) => {
+          const observed = values.find((x) => x.time === v.time)
           if (observed) {
             v.observed = observed.value
           }

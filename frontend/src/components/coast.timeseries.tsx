@@ -90,6 +90,7 @@ const Title = () => {
       </>
     )
   } catch (e) {
+    console.error(e)
     return 'Please select a coast point in the grid left after loading the result files'
   }
 }

@@ -1,5 +1,6 @@
 import {computed, signal} from '@preact/signals-react'
-import {selectedPoint} from './grid'
+import {resetGrid, selectedPoint} from './grid'
+import {resetStorm} from './storm'
 
 type RowData = {
   time: number
@@ -15,10 +16,18 @@ export const chartData = computed(() => {
   try {
     return coasts.value[selectedPoint.value.row][selectedPoint.value.column]
   } catch (e) {
-    // console.error(e)
+    console.error(e)
     return []
   }
 })
 
-export const coastLevelMin = signal(1000)
-export const coastLevelMax = signal(-1000)
+export const coastLevelMin = signal(10000)
+export const coastLevelMax = signal(-10000)
+
+export const resetCoasts = () => {
+  coasts.value = {}
+  coastLevelMin.value = 10000
+  coastLevelMax.value = -10000
+  resetGrid()
+  resetStorm()
+}

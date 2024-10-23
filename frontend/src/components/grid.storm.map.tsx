@@ -1,29 +1,25 @@
 import MapGL, {MapLayerMouseEvent} from 'react-map-gl/maplibre'
 import {Grid} from './grid'
-import {ConfigCard} from './config.card'
-import {selectedPoint} from '../stores/grid'
 import {Storm} from './storm'
+import {selectedPoint} from '../stores/grid'
 
-export const GridMap = () => (
-  <>
-    <MapGL
-      reuseMaps
-      initialViewState={{
-        longitude: 0,
-        latitude: 0,
-        zoom: 1,
-      }}
-      mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
-      interactiveLayerIds={['sea', 'coast', 'land']}
-      onMouseMove={onHover}
-      onClick={selectPoint}
-      keyboard={false}
-    >
-      <Grid />
-      <Storm />
-    </MapGL>
-    <ConfigCard />
-  </>
+export const GridStormMap = () => (
+  <MapGL
+    reuseMaps
+    initialViewState={{
+      longitude: 0,
+      latitude: 0,
+      zoom: 1,
+    }}
+    mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+    interactiveLayerIds={['sea', 'coast', 'land']}
+    onMouseMove={onHover}
+    onClick={selectPoint}
+    keyboard={false}
+  >
+    <Grid />
+    <Storm />
+  </MapGL>
 )
 
 const onHover = ({features, target}: MapLayerMouseEvent) => {

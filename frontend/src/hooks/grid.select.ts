@@ -3,6 +3,7 @@ import {selectedPoint, gridConfig} from '../stores/grid'
 
 export const useKeyboardSelection = () => {
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const listener = (e: any) => {
       if (e.target.className !== 'maplibregl-canvas') return
       if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) return

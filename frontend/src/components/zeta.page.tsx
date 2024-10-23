@@ -6,8 +6,9 @@ import {currentStormTime, currentZetaIdx, ZetaKey, zetaLayer, zetaMin, zetas} fr
 import {MapViewState, PickingInfo, WebMercatorViewport} from '@deck.gl/core'
 import {ContourLayer} from '@deck.gl/aggregation-layers'
 import {Card} from './card'
-import {formattedLngLat, Location} from './location'
+import {Location} from './location'
 import {useState} from 'react'
+import { formattedLngLat } from '../utils/formats'
 
 export const ZetaMapPage = () => (
   <>
@@ -29,7 +30,7 @@ export const ZetaMapPage = () => (
 )
 
 type ZetaMapProps = {
-  layer?: ContourLayer<any>
+  layer?: ContourLayer<[number, number, number]>
   zoom?: number
   type: ZetaKey
 }
@@ -50,7 +51,10 @@ const ZetaMap = ({layer, type}: ZetaMapProps) => {
       setHasLoaded(true)
 
       const viewport = layer.context.viewport as WebMercatorViewport
-      const {longitude, latitude, zoom} = viewport.fitBounds(layer.getBounds(), {padding: 10})
+      const {longitude, latitude, zoom} = viewport.fitBounds(
+        layer.getBounds() as [[number, number], [number, number]],
+        {padding: 10}
+      )
       setInitialViewState({longitude, latitude, zoom})
     }
   }
@@ -79,7 +83,7 @@ const getTooltip = (info: PickingInfo) => {
   }
   const {threshold} = info.object.contour
   const [lng, lat] = info.coordinate || []
-  const [minVal, maxVal] = threshold.map((x) => x + zetaMin.value)
+  const [minVal, maxVal] = threshold.map((x: number) => x + zetaMin.value)
   return {
     html: `
       <div>Sea level from ${minVal.toFixed(2)}m to ${maxVal.toFixed(2)}m</div>

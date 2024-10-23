@@ -13,30 +13,30 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as ZetaImport } from './routes/zeta'
+import { Route as CoastImport } from './routes/coast'
 import { Route as IndexImport } from './routes/index'
 
 // Create Virtual Routes
 
-const ZetaLazyImport = createFileRoute('/zeta')()
 const TestLazyImport = createFileRoute('/test')()
-const CoastLazyImport = createFileRoute('/coast')()
 
 // Create/Update Routes
-
-const ZetaLazyRoute = ZetaLazyImport.update({
-  path: '/zeta',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/zeta.lazy').then((d) => d.Route))
 
 const TestLazyRoute = TestLazyImport.update({
   path: '/test',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/test.lazy').then((d) => d.Route))
 
-const CoastLazyRoute = CoastLazyImport.update({
+const ZetaRoute = ZetaImport.update({
+  path: '/zeta',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const CoastRoute = CoastImport.update({
   path: '/coast',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/coast.lazy').then((d) => d.Route))
+} as any)
 
 const IndexRoute = IndexImport.update({
   path: '/',
@@ -58,7 +58,14 @@ declare module '@tanstack/react-router' {
       id: '/coast'
       path: '/coast'
       fullPath: '/coast'
-      preLoaderRoute: typeof CoastLazyImport
+      preLoaderRoute: typeof CoastImport
+      parentRoute: typeof rootRoute
+    }
+    '/zeta': {
+      id: '/zeta'
+      path: '/zeta'
+      fullPath: '/zeta'
+      preLoaderRoute: typeof ZetaImport
       parentRoute: typeof rootRoute
     }
     '/test': {
@@ -68,13 +75,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TestLazyImport
       parentRoute: typeof rootRoute
     }
-    '/zeta': {
-      id: '/zeta'
-      path: '/zeta'
-      fullPath: '/zeta'
-      preLoaderRoute: typeof ZetaLazyImport
-      parentRoute: typeof rootRoute
-    }
   }
 }
 
@@ -82,47 +82,47 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/coast': typeof CoastLazyRoute
+  '/coast': typeof CoastRoute
+  '/zeta': typeof ZetaRoute
   '/test': typeof TestLazyRoute
-  '/zeta': typeof ZetaLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/coast': typeof CoastLazyRoute
+  '/coast': typeof CoastRoute
+  '/zeta': typeof ZetaRoute
   '/test': typeof TestLazyRoute
-  '/zeta': typeof ZetaLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/coast': typeof CoastLazyRoute
+  '/coast': typeof CoastRoute
+  '/zeta': typeof ZetaRoute
   '/test': typeof TestLazyRoute
-  '/zeta': typeof ZetaLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/coast' | '/test' | '/zeta'
+  fullPaths: '/' | '/coast' | '/zeta' | '/test'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/coast' | '/test' | '/zeta'
-  id: '__root__' | '/' | '/coast' | '/test' | '/zeta'
+  to: '/' | '/coast' | '/zeta' | '/test'
+  id: '__root__' | '/' | '/coast' | '/zeta' | '/test'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CoastLazyRoute: typeof CoastLazyRoute
+  CoastRoute: typeof CoastRoute
+  ZetaRoute: typeof ZetaRoute
   TestLazyRoute: typeof TestLazyRoute
-  ZetaLazyRoute: typeof ZetaLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CoastLazyRoute: CoastLazyRoute,
+  CoastRoute: CoastRoute,
+  ZetaRoute: ZetaRoute,
   TestLazyRoute: TestLazyRoute,
-  ZetaLazyRoute: ZetaLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -139,21 +139,21 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/coast",
-        "/test",
-        "/zeta"
+        "/zeta",
+        "/test"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
     "/coast": {
-      "filePath": "coast.lazy.tsx"
+      "filePath": "coast.tsx"
+    },
+    "/zeta": {
+      "filePath": "zeta.tsx"
     },
     "/test": {
       "filePath": "test.lazy.tsx"
-    },
-    "/zeta": {
-      "filePath": "zeta.lazy.tsx"
     }
   }
 }

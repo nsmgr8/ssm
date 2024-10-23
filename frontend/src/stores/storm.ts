@@ -12,9 +12,13 @@ export type StormData = {
   }[]
 }
 
+export const resetStorm = () => (stormData.value = {} as StormData)
+
 export const stormData = signal({} as StormData)
+
 export const stormTrackGeoJSON = computed(() => {
   const {track = []} = stormData.value
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const features: any[] = track.map((p) => point([p.longitude, p.latitude], {time: p.time}))
   for (let i = 1; i < track.length; i++) {
     const p1 = [track[i - 1].longitude, track[i - 1].latitude]
