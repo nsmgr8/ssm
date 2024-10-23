@@ -10,11 +10,7 @@ PNPM = $(FRONTEND_RUN) pnpm
 
 .PHONY: env
 env:
-	$(PIP_INSTALL) pip
-	$(PIP_INSTALL) uv
 	$(UV) sync
-	$(FRONTEND_RUN) npm config set prefix '~/.local/'
-	$(FRONTEND_RUN) corepack enable pnpm
 	$(PNPM) update
 
 .PHONY: up

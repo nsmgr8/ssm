@@ -2,19 +2,24 @@
 
 Finite difference storm surge model runner and viewer.
 
-## Requirements
-
 The model is developed in python and has an API server to run the model.
 The results the run can be viewed in a web based frontend developed in React JS.
 
-To run and view results the following is required:
+## Run the app on Windows
 
-1. Linux/macOS/Windows WSL
-2. git
-3. make
-4. Docker Desktop
+Install [Docker Desktop](https://docs.docker.com/desktop/install/windows-install/)
+on your windows machine. A logout/restart is required.
 
-## Run the app
+To develop and contribute, optionally install [git (scm)](https://git-scm.com/downloads/win)
+and [clone it](https://github.com/nsmgr8/ssm.git) using your favorite git client.
+
+Otherwise, it can be also [downloaded as a zip file](https://github.com/nsmgr8/ssm/archive/refs/heads/main.zip).
+
+In the project root folder, double click the `run.bat` file.
+
+## Run the app on Linux/macOS
+
+Install Docker Desktop, git, make with your preferred package manager or from the websites.
 
 In the project root, run the following make command:
 
@@ -23,5 +28,7 @@ make up
 ```
 
 This will setup the necessary containers to run the app.
+
+## Access the app
 
 Now in your web browser go to the location: [http://localhost:3000].
