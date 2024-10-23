@@ -97,7 +97,7 @@ const loadZeta = loadFile({
     if (!key) return
     let [minVal, maxVal] = [zetaMin.value, zetaMax.value]
     data.zetas.forEach(({data: d}) =>
-      d.forEach(v => {
+      d.forEach((v) => {
         if (v[2] < minVal) minVal = v[2]
         if (v[2] > maxVal) maxVal = v[2]
       })

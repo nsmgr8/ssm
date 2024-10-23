@@ -1,5 +1,5 @@
 import {gridMatrix} from '../stores/grid'
-import { formattedLngLat } from '../utils/formats'
+import {formattedLngLat} from '../utils/formats'
 
 type LocationProps = {
   row: number

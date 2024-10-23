@@ -1,0 +1,26 @@
+services:
+  backend:
+    image: python:3.12
+    working_dir: /app
+    volumes:
+      - ./backend/:/app
+      - ./data/:/data
+      - ./.home:/root
+    environment:
+      PATH: /root/.local/bin:$PATH
+      PIP_ROOT_USER_ACTION: ignore
+    ports:
+      - "8000:8000"
+    command: /root/.local/bin/uv run fastapi dev --host 0.0.0.0 --port 8000 server.py
+
+  frontend:
+    image: node:lts
+    working_dir: /app
+    volumes:
+      - ./frontend/:/app
+      - ./.home:/root
+    environment:
+      PATH: /root/.local/bin:$PATH
+    ports:
+      - "3000:3000"
+    command: /root/.local/bin/pnpm dev --host 0.0.0.0 --port 3000

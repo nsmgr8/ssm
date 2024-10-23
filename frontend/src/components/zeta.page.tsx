@@ -8,7 +8,7 @@ import {ContourLayer} from '@deck.gl/aggregation-layers'
 import {Card} from './card'
 import {Location} from './location'
 import {useState} from 'react'
-import { formattedLngLat } from '../utils/formats'
+import {formattedLngLat} from '../utils/formats'
 
 export const ZetaMapPage = () => (
   <>

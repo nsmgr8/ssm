@@ -8,14 +8,10 @@ import app_types as types
 import consts
 from multiprocess_run import start
 
-origins = [
-    "*",
-]
-
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -49,7 +45,6 @@ async def websocket_endpoint(websocket: WebSocket):
             data = await websocket.receive_text()
             await manager.broadcast(data)
     except websockets.WebSocketDisconnect:
-        print("Disconnected...")
         manager.disconnect(websocket)
 
 

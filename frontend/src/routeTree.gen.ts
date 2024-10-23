@@ -24,21 +24,25 @@ const TestLazyImport = createFileRoute('/test')()
 // Create/Update Routes
 
 const TestLazyRoute = TestLazyImport.update({
+  id: '/test',
   path: '/test',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/test.lazy').then((d) => d.Route))
 
 const ZetaRoute = ZetaImport.update({
+  id: '/zeta',
   path: '/zeta',
   getParentRoute: () => rootRoute,
 } as any)
 
 const CoastRoute = CoastImport.update({
+  id: '/coast',
   path: '/coast',
   getParentRoute: () => rootRoute,
 } as any)
 
 const IndexRoute = IndexImport.update({
+  id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
 } as any)

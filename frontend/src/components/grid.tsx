@@ -16,7 +16,8 @@ export const Grid = () => {
     if (gridMatrix.value.length) {
       map?.fitBounds(gridDomain(gridMatrix.value))
     }
-  }, [map])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map, gridMatrix.value])
 
   useKeyboardSelection()
 
