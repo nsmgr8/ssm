@@ -139,7 +139,7 @@ const loadZeta = loadFile({
       await setupGrid(data.grid_params, data.grid)
       stormData.value = data.storm
       stormStartedAt.value = +new Date(data.started_at)
-      zetaDt.value = data.store_dt
+      zetaDt.value = data.store_dt * 1000
     }
     zetaMin.value = minVal
     zetaMax.value = maxVal

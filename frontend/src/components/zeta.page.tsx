@@ -1,17 +1,17 @@
-import MapGL, {Layer, Source} from 'react-map-gl/maplibre'
+import MapGL, {Layer, MapGeoJSONFeature, MapProvider, Source, useMap} from 'react-map-gl/maplibre'
 import {Storm} from './storm'
 import DeckGL from '@deck.gl/react'
 import {ZetaCard} from './zeta.card'
-import {peak, RunType, zetaLayer, zetaMin} from '../stores/zeta'
+import {currentZetaIdx, peak, RunType, zetaDt, zetaLayer, zetaMin} from '../stores/zeta'
 import {MapViewState, PickingInfo, WebMercatorViewport} from '@deck.gl/core'
 import {ContourLayer} from '@deck.gl/aggregation-layers'
-import {useState} from 'react'
+import {useCallback, useState} from 'react'
 import {formattedLngLat} from '../utils/formats'
 import {InfoCard} from './zeta.info.card'
 import {featureCollection, point} from '@turf/turf'
 
 export const ZetaMapPage = () => (
-  <>
+  <MapProvider>
     <div
       style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gridGap: 1, position: 'relative', height: '100%'}}
     >
@@ -26,7 +26,7 @@ export const ZetaMapPage = () => (
       </div>
     </div>
     <ZetaCard />
-  </>
+  </MapProvider>
 )
 
 type ZetaMapProps = {
@@ -58,17 +58,51 @@ const ZetaMap = ({layer, type}: ZetaMapProps) => {
       setInitialViewState({longitude, latitude, zoom})
     }
   }
+
+  const mapId = `zeta-map-${type}`
+  const deckId = `zeta-deck-${type}`
+  const {[mapId]: map} = useMap()
+  const [isOnStorm, setIsOnStorm] = useState(false)
+
+  const onStormPoint = useCallback(
+    (callback: (feature: MapGeoJSONFeature) => void) =>
+      ({x, y}: PickingInfo) => {
+        if (!map || type === 'tide') return
+        const [feature] = map.queryRenderedFeatures([x, y], {
+          layers: ['storm-point'],
+          filter: ['==', ['geometry-type'], 'Point'],
+        })
+        callback(feature)
+      },
+    [map, type]
+  )
+
+  const onHover = onStormPoint((feature) => {
+    setIsOnStorm(!!feature)
+  })
+
+  const onClick = onStormPoint((feature) => {
+    if (feature) {
+      const {time} = feature.properties
+      currentZetaIdx.value = time / zetaDt.value
+    }
+  })
+
   return (
     <>
       <DeckGL
+        id={deckId}
         initialViewState={initialViewState}
-        controller={true}
+        controller
         layers={[layer]}
         getTooltip={getTooltip}
         style={{mixBlendMode: 'lighten'}}
         onAfterRender={onAfterRender}
+        onClick={onClick}
+        onHover={onHover}
+        getCursor={() => (isOnStorm ? 'pointer' : 'grab')}
       >
-        <MapGL reuseMaps mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json">
+        <MapGL id={mapId} reuseMaps mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json">
           {type !== 'tide' && <Storm />}
           <PeakLocation type={type} />
         </MapGL>

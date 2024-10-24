@@ -39,9 +39,7 @@ export const zetaDt = signal(0)
 export const numBands = signal(10)
 
 export const stormStartedAt = signal(0)
-export const currentStormTime = computed(
-  () => new Date(stormStartedAt.value + currentZetaIdx.value * zetaDt.value * 1000)
-)
+export const currentStormTime = computed(() => new Date(stormStartedAt.value + currentZetaIdx.value * zetaDt.value))
 export const currentStorm = computed(() =>
   zetas.value.both.length > currentZetaIdx.value ? zetas.value.both[currentZetaIdx.value].storm_location : []
 )

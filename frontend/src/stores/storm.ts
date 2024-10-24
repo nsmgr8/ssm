@@ -1,5 +1,6 @@
 import {computed, signal} from '@preact/signals-react'
 import {featureCollection, lineString, point} from '@turf/turf'
+import {stormStartedAt} from './zeta'
 
 export type StormData = {
   name: string
@@ -19,7 +20,9 @@ export const stormData = signal({} as StormData)
 export const stormTrackGeoJSON = computed(() => {
   const {track = []} = stormData.value
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const features: any[] = track.map((p) => point([p.longitude, p.latitude], {time: p.time}))
+  const features: any[] = track.map((p) =>
+    point([p.longitude, p.latitude], {time: +new Date(p.time) - stormStartedAt.value})
+  )
   for (let i = 1; i < track.length; i++) {
     const p1 = [track[i - 1].longitude, track[i - 1].latitude]
     const p2 = [track[i].longitude, track[i].latitude]
