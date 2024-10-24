@@ -1,14 +1,14 @@
-import MapGL from 'react-map-gl/maplibre'
+import MapGL, {Layer, Source} from 'react-map-gl/maplibre'
 import {Storm} from './storm'
 import DeckGL from '@deck.gl/react'
 import {ZetaCard} from './zeta.card'
-import {currentStormTime, currentZetaIdx, ZetaKey, zetaLayer, zetaMin, zetas} from '../stores/zeta'
+import {peak, RunType, zetaLayer, zetaMin} from '../stores/zeta'
 import {MapViewState, PickingInfo, WebMercatorViewport} from '@deck.gl/core'
 import {ContourLayer} from '@deck.gl/aggregation-layers'
-import {Card} from './card'
-import {Location} from './location'
 import {useState} from 'react'
 import {formattedLngLat} from '../utils/formats'
+import {InfoCard} from './zeta.info.card'
+import {featureCollection, point} from '@turf/turf'
 
 export const ZetaMapPage = () => (
   <>
@@ -32,7 +32,7 @@ export const ZetaMapPage = () => (
 type ZetaMapProps = {
   layer?: ContourLayer<[number, number, number]>
   zoom?: number
-  type: ZetaKey
+  type: RunType
 }
 
 const ZetaMap = ({layer, type}: ZetaMapProps) => {
@@ -70,10 +70,21 @@ const ZetaMap = ({layer, type}: ZetaMapProps) => {
       >
         <MapGL reuseMaps mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json">
           {type !== 'tide' && <Storm />}
+          <PeakLocation type={type} />
         </MapGL>
       </DeckGL>
       <InfoCard type={type} />
     </>
+  )
+}
+
+const PeakLocation = ({type}: {type: RunType}) => {
+  const {location, value} = peak.value[type]
+  const geojson = location.length === 2 ? point(location, {value}) : featureCollection([])
+  return (
+    <Source id="peak-location-source" type="geojson" data={geojson}>
+      <Layer id="peak-location-layer" type="circle" paint={{'circle-color': 'white', 'circle-radius': 14}} />
+    </Source>
   )
 }
 
@@ -90,54 +101,4 @@ const getTooltip = (info: PickingInfo) => {
       <div>Location: ${formattedLngLat(lng, lat)}</div>
     `,
   }
-}
-
-type InfoCardProps = {
-  type: ZetaKey
-}
-const label = (type: ZetaKey) =>
-  ({
-    both: 'Surge and Tide',
-    surge: 'Surge only',
-    tide: 'Tide only',
-  })[type]
-const InfoCard = ({type}: InfoCardProps) => {
-  let maxVal = -10000
-  let maxLoc: number[] = [0, 0]
-  zetas.value[type][currentZetaIdx.value]?.data.forEach(([i, j, v]) => {
-    if (v > maxVal) {
-      maxVal = v
-      maxLoc = [i, j]
-    }
-  })
-  return (
-    <Card style={{position: 'absolute', right: 10, left: ''}}>
-      <table>
-        <caption style={{display: 'block'}}>{label(type)}</caption>
-        {zetas.value[type].length > 0 && (
-          <tbody>
-            <tr>
-              <th style={{textAlign: 'right'}}>Time</th>
-              <td>
-                {currentStormTime.value.toLocaleString('en-GB', {
-                  dateStyle: 'medium',
-                  timeStyle: 'short',
-                })}
-              </td>
-            </tr>
-            <tr>
-              <th style={{textAlign: 'right'}}>Peak value</th>
-              <td>{maxVal.toFixed(2)} meters</td>
-            </tr>
-            <tr>
-              <th style={{textAlign: 'right'}}>Peak at</th>
-              <td>
-                <Location row={maxLoc[0]} column={maxLoc[1]} />
-              </td>
-            </tr>
-          </tbody>
-        )}
-      </table>
-    </Card>
-  )
 }

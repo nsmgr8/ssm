@@ -1,24 +1,35 @@
 import {LoadFile} from './load.file'
 import {GridConfig, GridPoint, setupGrid} from '../stores/grid'
 import {StormData, stormData} from '../stores/storm'
-import {currentZetaIdx, getBands, resetZeta, stormStartedAt, zetaDt, zetaMax, zetaMin, zetas} from '../stores/zeta'
+import {
+  currentZetaIdx,
+  getBands,
+  numBands,
+  resetZeta,
+  stormStartedAt,
+  zetaDt,
+  zetaMax,
+  zetaMin,
+  zetas,
+} from '../stores/zeta'
 import {Card} from './card'
 import {loadFile} from '../utils/file.load'
 import {useCallback, useState} from 'react'
+import {computed} from '@preact/signals-react'
 
 export const ZetaCard = () => {
-  const [playTimeout, setPlayTimeout] = useState<ReturnType<typeof setTimeout>>()
+  const [playId, setPlayId] = useState<ReturnType<typeof setInterval>>()
+
   const play = useCallback(() => {
-    const run = () => {
-      const timeout = setTimeout(() => {
-        nextZeta(1)()
-        if (currentZetaIdx.value < zetas.value.both.length - 1) run()
-      }, 300)
-      setPlayTimeout(timeout)
+    if (!playId) {
+      setPlayId(setInterval(forwardZeta, 300))
     }
-    run()
-    return () => clearTimeout(playTimeout)
-  }, [playTimeout])
+  }, [playId])
+
+  const pause = useCallback(() => {
+    clearInterval(playId)
+    setPlayId(undefined)
+  }, [playId])
 
   return (
     <Card>
@@ -35,7 +46,7 @@ export const ZetaCard = () => {
             <button type="button" onClick={play}>
               Play
             </button>
-            <button type="button" onClick={() => clearTimeout(playTimeout)}>
+            <button type="button" onClick={pause}>
               Pause
             </button>
             <button type="button" onClick={() => resetZeta()}>
@@ -43,19 +54,28 @@ export const ZetaCard = () => {
             </button>
           </div>
           <div>
-            <div style={{display: 'grid', gridTemplateColumns: 'repeat(11, 1fr)'}}>
-              {getBands().map(({color: [r, g, b]}, idx) => (
+            <div style={{display: 'grid', gridTemplateColumns: `repeat(${numBands.value + 1}, 1fr)`}}>
+              {getBands(numBands.value).map(({color: [r, g, b]}, idx) => (
                 <div key={idx} style={{backgroundColor: `rgb(${r}, ${g}, ${b})`}}>
                   &nbsp;
                 </div>
               ))}
             </div>
             <div style={{display: 'flex', justifyContent: 'space-between'}}>
-              <span>{zetaMin.value}</span>
-              <span>{zetaMin.value / 4}</span>
-              <span>{zetaMin.value / 2}</span>
-              <span>{(zetaMin.value / 4) * 3}</span>
-              <span>{zetaMax.value}</span>
+              {zetaBands.value.map((x) => (
+                <span key={x}>{x.toFixed(1)}</span>
+              ))}
+            </div>
+            <div>
+              <label htmlFor="id-num-bands">Bands ({numBands.value})</label>
+              <input
+                type="range"
+                defaultValue={numBands.value}
+                min={10}
+                max={100}
+                step={1}
+                onChange={({target: {value}}) => (numBands.value = +value)}
+              />
             </div>
           </div>
         </>
@@ -63,6 +83,17 @@ export const ZetaCard = () => {
     </Card>
   )
 }
+
+const zetaBands = computed(() => {
+  const diff = zetaMax.value - zetaMin.value
+  return [
+    zetaMin.value,
+    zetaMin.value + diff / 4,
+    zetaMin.value + diff / 2,
+    zetaMin.value + (diff / 4) * 3,
+    zetaMax.value,
+  ]
+})
 
 const nextZeta = (direction: 1 | -1) => () => {
   const idx = currentZetaIdx.value + direction
@@ -74,6 +105,8 @@ const nextZeta = (direction: 1 | -1) => () => {
     currentZetaIdx.value = idx
   }
 }
+
+const forwardZeta = nextZeta(1)
 
 type ZetaRaw = {
   surge: boolean
@@ -108,8 +141,8 @@ const loadZeta = loadFile({
       stormStartedAt.value = +new Date(data.started_at)
       zetaDt.value = data.store_dt
     }
-    zetaMin.value = Math.floor(minVal)
-    zetaMax.value = Math.ceil(maxVal)
+    zetaMin.value = minVal
+    zetaMax.value = maxVal
     zetas.value = {...zetas.value, [key]: data.zetas}
     currentZetaIdx.value = 0
   },

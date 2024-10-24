@@ -86,7 +86,7 @@ const Title = () => {
         <div>
           Grid Point: {row}, {column}
         </div>
-        <div>RMSE: {rmse.toFixed(2)}</div>
+        {n > 0 && <div>RMSE: {rmse.toFixed(2)}</div>}
       </>
     )
   } catch (e) {

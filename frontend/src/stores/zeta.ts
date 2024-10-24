@@ -15,9 +15,11 @@ type Zetas = {
   surge: ZetaData[]
   tide: ZetaData[]
 }
-export type ZetaKey = keyof Zetas
+export type RunType = keyof Zetas
+const runTypes: RunType[] = ['both', 'surge', 'tide']
 
 const initialZeta = {both: [], surge: [], tide: []}
+
 export const resetZeta = () => {
   zetas.value = initialZeta
   zetaMin.value = 10000
@@ -34,6 +36,7 @@ export const currentZetaIdx = signal(0)
 export const zetaMin = signal(0)
 export const zetaMax = signal(0)
 export const zetaDt = signal(0)
+export const numBands = signal(10)
 
 export const stormStartedAt = signal(0)
 export const currentStormTime = computed(
@@ -46,8 +49,8 @@ export const currentStormGeoJSON = computed(() =>
   currentStorm.value.length === 2 ? point(currentStorm.value) : featureCollection([])
 )
 export const zetaLayer = computed(() => {
-  const layers = {} as Record<ZetaKey, ContourLayer<[number, number, number]>>
-  ;(['both', 'surge', 'tide'] as ZetaKey[]).forEach((key) => {
+  const layers = {} as Record<RunType, ContourLayer<[number, number, number]>>
+  runTypes.forEach((key) => {
     if (zetas.value[key].length > currentZetaIdx.value) {
       const {data} = zetas.value[key][currentZetaIdx.value]
       layers[key] = new ContourLayer<[number, number, number]>({
@@ -57,18 +60,36 @@ export const zetaLayer = computed(() => {
         getWeight: (d) => d[2] - zetaMin.value,
         pickable: true,
         aggregation: 'MEAN',
-        contours: getBands(),
+        contours: getBands(numBands.value),
         cellSize: 17000,
       })
     }
   })
   return layers
 })
+export const peak = computed(() => {
+  const result = {
+    both: {location: [], value: -10000},
+    surge: {location: [], value: -10000},
+    tide: {location: [], value: -10000},
+  } as Record<RunType, {location: number[]; value: number}>
+
+  runTypes.forEach((key) => {
+    if (zetas.value[key].length > currentZetaIdx.value) {
+      const {data} = zetas.value[key][currentZetaIdx.value]
+      let max = [-1, -1, -10000]
+      data.forEach((v) => {
+        if (v[2] > max[2]) max = v
+      })
+      result[key] = {location: gridMatrix.value[max[0]][max[1]], value: max[2]}
+    }
+  })
+  return result
+})
 
 type ColorTuple = [number, number, number]
 
-export function getBands() {
-  const nBands = 10
+export function getBands(nBands = 10) {
   const dVal = (zetaMax.value - zetaMin.value) / (nBands + 1)
   const bands: {threshold: [number, number]; color: ColorTuple}[] = []
   for (let i = 0; i <= nBands; i++) {
