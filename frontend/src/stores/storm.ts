@@ -1,6 +1,7 @@
 import {computed, signal} from '@preact/signals-react'
 import {featureCollection, lineString, point} from '@turf/turf'
 import {stormStartedAt} from './zeta'
+import {titleCase} from '../utils/formats'
 
 export type StormData = {
   name: string
@@ -16,6 +17,10 @@ export type StormData = {
 export const resetStorm = () => (stormData.value = {} as StormData)
 
 export const stormData = signal({} as StormData)
+export const stormName = computed(() => {
+  const {name = ''} = stormData.value
+  return titleCase(name.replace('-', ' '))
+})
 
 export const stormTrackGeoJSON = computed(() => {
   const {track = []} = stormData.value

@@ -4,7 +4,7 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {formatMilliseconds} from '../utils/formats'
 import {IntervalType} from '../utils/types'
 
-const STALE_TIME = 10_000
+const STALE_TIME = 30_000
 
 export const ProgressModal = () => {
   const {lastJsonMessage} = useWebSocket('ws://localhost:8000/ws', {

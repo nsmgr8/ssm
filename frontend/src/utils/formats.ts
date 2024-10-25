@@ -1,4 +1,7 @@
 export const formattedLngLat = (lng: number, lat: number) => {
+  if (lng === undefined || lat === undefined) {
+    return 'unknown'
+  }
   const lngStr = lng > 0 ? 'N' : 'S'
   const latStr = lat > 0 ? 'E' : 'W'
   return `${lng.toFixed(2)}°${lngStr}, ${lat.toFixed(2)}°${latStr}`
@@ -16,3 +19,9 @@ export const formatMilliseconds = (milliseconds: number) => {
   seconds = Math.floor(rem)
   return [hours, minutes, seconds].map((x) => `${x}`.padStart(2, '0')).join(':')
 }
+
+export const titleCase = (s: string) =>
+  s
+    .split(' ')
+    .map((x) => x[0]?.toUpperCase() + x.slice(1))
+    .join(' ')

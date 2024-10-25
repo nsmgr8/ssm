@@ -82,7 +82,7 @@ class EllipticSurgeModel:
                 self.notify(count)
 
         self.notify(self.n_steps)
-        self.save_output(include)
+        self.save_output(include, storm_locations)
 
     def store_zetas(self, seconds, storm_loc):
         data = []
@@ -114,7 +114,7 @@ class EllipticSurgeModel:
                     )
                 )
 
-    def save_output(self, include):
+    def save_output(self, include, storm_locations):
         output_name_parts = ["{name}", "json"]
         if include.tide:
             output_name_parts.insert(1, "tide")
@@ -134,11 +134,11 @@ class EllipticSurgeModel:
             "storm": json.loads(self.storm.model_dump_json()),
             "grid_params": self.grid_params.model_dump(),
             "run_params": self.run_params.model_dump(),
-            "coasts": self.test_zetas,
             "grid": self.grid,
         }
         with open(output_filename("coasts"), "w") as fh:
             output["coasts"] = self.test_zetas
+            output["storm_locations"] = storm_locations
             json.dump(output, fh)
 
         with open(output_filename("zetas"), "w") as fh:

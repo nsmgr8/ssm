@@ -1,16 +1,21 @@
 import {Card} from './card'
 import {LoadFile} from './load.file'
 import {loadFile} from '../utils/file.load'
-import {setupGrid} from '../stores/grid'
+import {selectedPoint, setupGrid} from '../stores/grid'
 import {stormData} from '../stores/storm'
-import {coastLevelMax, coastLevelMin, Coasts, coasts} from '../stores/coast'
+import {coastLevelMax, coastLevelMin, Coasts, coasts, observed, resetCoasts} from '../stores/coast'
 
 export const CoastsCard = () => {
   return (
     <Card>
       <LoadFile id="coasts-file" label="Load coast files" onChange={loadCoasts} multiple />
       {Object.keys(coasts.value).length > 0 && (
-        <LoadFile id="observed-file" label="Load observed file" onChange={loadObserved} />
+        <>
+          <LoadFile id="observed-file" label="Load observed file" onChange={loadObserved} />
+          <button type="button" onClick={resetCoasts}>
+            Clear
+          </button>
+        </>
       )}
     </Card>
   )
@@ -36,47 +41,38 @@ const loadCoasts = loadFile({
         coasts_data[row] = {}
       }
       if (coasts_data[row][column] === undefined) {
-        coasts_data[row][column] = values.map((v, i) => {
-          findMinMax(v)
-          return {
-            [key]: v,
-            time: (i * data.run_params.dt + data.start_timestamp) * 1000,
-          }
-        })
-      } else {
-        values.forEach((v, i) => {
-          findMinMax(v)
-          coasts_data[row][column][i][key] = v
-        })
+        coasts_data[row][column] = {both: [], surge: [], tide: []}
       }
+
+      coasts_data[row][column][key] = values.map((v, i) => {
+        findMinMax(v)
+        return [(i * data.run_params.dt + data.start_timestamp) * 1000, v]
+      })
     })
-    console.log({dMin, dMax})
-    coastLevelMin.value = dMin //Math.floor(dMin)
-    coastLevelMax.value = dMax //Math.ceil(dMax)
+    coastLevelMin.value = dMin
+    coastLevelMax.value = dMax
     coasts.value = coasts_data
+    if (selectedPoint.value.row < 0 || selectedPoint.value.column < 0) {
+      const row = +Object.keys(coasts_data)[0] || -1
+      const column = +Object.keys(coasts_data[row] || {})[0] || -1
+      selectedPoint.value = {row, column}
+    }
   },
 })
 
 const loadObserved = loadFile({
   async onLoad(e: ProgressEvent<FileReader>) {
-    const data = JSON.parse(e.target?.result as string)
-    const values: {time: number; value: number}[] = data.values.map((x: {timestamp: number; sea_level: number}) => ({
-      time: x.timestamp * 1000,
-      value: x.sea_level,
-    }))
-    const coasts_data = {} as Coasts
-    Object.entries(coasts.value).forEach(([row, columnData]) => {
-      coasts_data[+row] = {}
-      Object.entries(columnData).forEach(([column, data]) => {
-        coasts_data[+row][+column] = data.map((v) => {
-          const observed = values.find((x) => x.time === v.time)
-          if (observed) {
-            v.observed = observed.value
-          }
-          return v
-        })
-      })
+    const {values} = JSON.parse(e.target?.result as string) as {values: {timestamp: number; sea_level: number}[]}
+    let [dMin, dMax] = [coastLevelMin.value, coastLevelMax.value]
+    const findMinMax = (v: number) => {
+      if (v > dMax) dMax = v
+      if (v < dMin) dMin = v
+    }
+    observed.value = values.map((x) => {
+      findMinMax(x.sea_level)
+      return [x.timestamp * 1000, x.sea_level]
     })
-    coasts.value = {...coasts_data}
+    coastLevelMin.value = dMin
+    coastLevelMax.value = dMax
   },
 })

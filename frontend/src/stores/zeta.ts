@@ -16,7 +16,7 @@ type Zetas = {
   tide: ZetaData[]
 }
 export type RunType = keyof Zetas
-const runTypes: RunType[] = ['both', 'surge', 'tide']
+export const runTypes: RunType[] = ['both', 'surge', 'tide']
 
 const initialZeta = {both: [], surge: [], tide: []}
 
