@@ -8,6 +8,7 @@ export const LoadFile = ({id, label, ...props}: LoadFileProps) => (
     style={{
       display: 'flex',
       justifyContent: 'space-between',
+      gap: 10,
       marginBottom: '3px',
       borderBottom: '1px solid black',
       paddingBottom: '2px',

@@ -8,9 +8,9 @@ import {coastLevelMax, coastLevelMin, Coasts, coasts} from '../stores/coast'
 export const CoastsCard = () => {
   return (
     <Card>
-      <LoadFile id="coasts-file" label="Coasts file" onChange={loadCoasts} multiple />
+      <LoadFile id="coasts-file" label="Load coast files" onChange={loadCoasts} multiple />
       {Object.keys(coasts.value).length > 0 && (
-        <LoadFile id="observed-file" label="Observed file" onChange={loadObserved} />
+        <LoadFile id="observed-file" label="Load observed file" onChange={loadObserved} />
       )}
     </Card>
   )
@@ -50,8 +50,9 @@ const loadCoasts = loadFile({
         })
       }
     })
-    coastLevelMin.value = Math.floor(dMin)
-    coastLevelMax.value = Math.ceil(dMax)
+    console.log({dMin, dMax})
+    coastLevelMin.value = dMin //Math.floor(dMin)
+    coastLevelMax.value = dMax //Math.ceil(dMax)
     coasts.value = coasts_data
   },
 })

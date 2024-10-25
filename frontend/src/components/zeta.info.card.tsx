@@ -3,48 +3,49 @@ import {zetas, currentStormTime, RunType, currentStorm, peak} from '../stores/ze
 import {formattedLngLat} from '../utils/formats'
 import {Card} from './card'
 import {stormData} from '../stores/storm'
+import {ComponentProps} from 'react'
 
 export const InfoCard = ({type}: InfoCardProps) => {
   const {location, value} = peak.value[type]
   return (
     <Card style={{position: 'absolute', right: 10, left: ''}}>
-      <table>
-        <caption style={{fontWeight: 'bold', borderBottom: '1px solid black'}}>
-          <div style={{display: 'flex', justifyContent: 'space-between'}}>
+      <table style={{borderCollapse: 'collapse'}}>
+        <caption style={{fontWeight: 'bold', borderBottom: '1px solid black', textWrap: 'nowrap'}}>
+          <div style={{display: 'flex', justifyContent: 'space-between', gap: 10}}>
             <div>{type === 'tide' ? '' : stormData.value.name}</div>
             <div>{label(type)}</div>
           </div>
         </caption>
         {zetas.value[type].length > 0 && currentStorm.value.length === 2 && (
           <tbody>
-            {type !== 'tide' && (
-              <tr>
-                <th style={{textAlign: 'right'}}>Storm center</th>
-                <td>{formattedLngLat(currentStorm.value[0], currentStorm.value[1])}</td>
-              </tr>
-            )}
-            <tr>
-              <th style={{textAlign: 'right'}}>Time</th>
-              <td>
+            <TableRow>
+              <TableCellHeading>Time</TableCellHeading>
+              <TableCell>
                 {currentStormTime.value.toLocaleString('en-GB', {
                   dateStyle: 'medium',
                   timeStyle: 'short',
                 })}
-              </td>
-            </tr>
-            <tr>
-              <th style={{textAlign: 'right'}}>Peak value</th>
-              <td>{value.toFixed(2)} meters</td>
-            </tr>
-            <tr>
-              <th style={{textAlign: 'right'}}>Peak at</th>
-              <td>{formattedLngLat(location[0], location[1])}</td>
-            </tr>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCellHeading>Peak value</TableCellHeading>
+              <TableCell>{value.toFixed(2)} meters</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCellHeading>Peak at</TableCellHeading>
+              <TableCell>{formattedLngLat(location[0], location[1])}</TableCell>
+            </TableRow>
             {type !== 'tide' && (
-              <tr>
-                <th style={{textAlign: 'right'}}>Storm distance</th>
-                <td>{distance(location, currentStorm.value).toFixed(2)} km</td>
-              </tr>
+              <>
+                <TableRow>
+                  <TableCellHeading>Storm center</TableCellHeading>
+                  <TableCell>{formattedLngLat(currentStorm.value[0], currentStorm.value[1])}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCellHeading>Storm distance</TableCellHeading>
+                  <TableCell>{distance(location, currentStorm.value).toFixed(2)} km</TableCell>
+                </TableRow>
+              </>
             )}
           </tbody>
         )}
@@ -63,3 +64,11 @@ const label = (type: RunType) =>
     surge: 'Surge only',
     tide: 'Tide only',
   })[type]
+
+const TableRow = ({children}: ComponentProps<'tr'>) => <tr style={{borderBottom: '1px solid #aaa'}}>{children}</tr>
+const TableCellHeading = ({children}: ComponentProps<'th'>) => (
+  <th style={{textAlign: 'right', borderRight: '1px solid #aaa', padding: '3px 5px'}}>{children}</th>
+)
+const TableCell = ({children}: ComponentProps<'td'>) => (
+  <td style={{textAlign: 'right', padding: '3px 5px', fontFamily: 'monospace'}}>{children}</td>
+)

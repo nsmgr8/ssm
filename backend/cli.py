@@ -11,7 +11,7 @@ def run(kwargs):
         config = GridConfig(**json.load(fp))
     with open((STORM_FOLDER / "bulbul-2019" / "track.json")) as fp:
         storm = Storm(**json.load(fp))
-    run_params = RunParams(dt=60, tide_phase=0, tide_amplitude=0.6)
+    run_params = RunParams(dt=60, store_dt=60, tide_phase=0, tide_amplitude=0.6)
     model = EllipticSurgeModel(
         grid=config.grid,
         grid_params=config.config,

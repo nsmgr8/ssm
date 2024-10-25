@@ -33,7 +33,7 @@ export const ProgressBar = ({data, color}: ProgressProps) => {
   }, [prevValue.current, data])
   if (!data.name) return null
   return (
-    <div style={{display: 'flex', justifyContent: 'space-between', gap: 10, width: '360px'}}>
+    <>
       <div>{data.name}</div>
       <div style={{width: '100%', backgroundColor: '#aaa'}}>
         <div style={{width: `${(data.current / data.total) * 100}%`, backgroundColor: color}}>&nbsp;</div>
@@ -44,6 +44,6 @@ export const ProgressBar = ({data, color}: ProgressProps) => {
       <div style={{textWrap: 'nowrap'}}>
         {prevValue.current?.remaining ? formatMilliseconds(prevValue.current.remaining) : '--:--:--'}
       </div>
-    </div>
+    </>
   )
 }

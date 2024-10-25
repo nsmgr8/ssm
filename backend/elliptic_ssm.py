@@ -43,7 +43,6 @@ class EllipticSurgeModel:
         *,
         include: IncludeFlags,
         position=0,
-        ws=None,
     ):
         self.reset()
 
@@ -78,7 +77,7 @@ class EllipticSurgeModel:
             # if (courant := get_max_courant()) > 1:
             #     print(f'Courant number is high: {courant} at step {i}')
 
-            if count % 60 == 0 or count == self.n_steps - 1:
+            if seconds % self.run_params.store_dt == 0 or count == self.n_steps - 1:
                 self.store_zetas(seconds, storm_loc)
                 self.notify(count)
 
@@ -144,7 +143,7 @@ class EllipticSurgeModel:
 
         with open(output_filename("zetas"), "w") as fh:
             del output["coasts"]
-            output["store_dt"] = self.dt * 60
+            output["store_dt"] = self.run_params.store_dt
             output["zetas"] = self.zetas
             json.dump(output, fh)
 

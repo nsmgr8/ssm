@@ -16,8 +16,7 @@ import {Card} from './card'
 import {loadFile} from '../utils/file.load'
 import {useCallback, useEffect, useState} from 'react'
 import {computed} from '@preact/signals-react'
-
-type IntervalType = ReturnType<typeof setInterval>
+import {IntervalType} from '../utils/types'
 
 export const ZetaCard = () => {
   const [playId, setPlayId] = useState<IntervalType>()
@@ -35,9 +34,14 @@ export const ZetaCard = () => {
     setPlayId(undefined)
   }, [playId])
 
+  const clear = useCallback(() => {
+    resetZeta()
+    pause()
+  }, [pause])
+
   return (
     <Card>
-      <LoadFile id="zeta-file" label="Zeta file" onChange={loadZeta} multiple />
+      <LoadFile id="zeta-file" label="Load zeta files" onChange={loadZeta} multiple />
       {zetas.value.both.length > 0 && (
         <>
           <div style={{display: 'flex', gap: 5, marginBottom: '5px'}}>
@@ -53,7 +57,7 @@ export const ZetaCard = () => {
             <button type="button" onClick={pause}>
               Pause
             </button>
-            <button type="button" onClick={() => resetZeta()}>
+            <button type="button" onClick={clear}>
               Clear
             </button>
           </div>
@@ -70,9 +74,10 @@ export const ZetaCard = () => {
                 <span key={x}>{x.toFixed(1)}</span>
               ))}
             </div>
-            <div>
+            <div style={{display: 'flex', justifyContent: 'space-between', gap: 10}}>
               <label htmlFor="id-num-bands">Bands ({numBands.value})</label>
               <input
+                style={{flexGrow: 1}}
                 type="range"
                 defaultValue={numBands.value}
                 min={10}

@@ -16,6 +16,7 @@ def to_degree(x: float):
 
 
 Degree2Radian = Annotated[float, AfterValidator(to_radian), PlainSerializer(to_degree)]
+Minute2Second = Annotated[int, AfterValidator(lambda x: x * 60)]
 
 
 class GeographicCoordinates(BaseModel):
@@ -34,7 +35,8 @@ class GridParams(BaseModel):
 
 
 class RunParams(BaseModel):
-    dt: float
+    dt: int
+    store_dt: Minute2Second
     tide_amplitude: float
     tide_phase: Degree2Radian
 

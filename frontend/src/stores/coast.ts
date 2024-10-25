@@ -15,8 +15,8 @@ export const coasts = signal({} as Coasts)
 export const chartData = computed(() => {
   try {
     return coasts.value[selectedPoint.value.row][selectedPoint.value.column]
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
-    console.error(e)
     return []
   }
 })

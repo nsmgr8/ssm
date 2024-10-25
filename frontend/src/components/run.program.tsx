@@ -6,6 +6,7 @@ import {FormInput} from './form.input'
 
 const runParams = [
   {name: 'dt', label: 'Time interval (seconds)', value: 60},
+  {name: 'store_dt', label: 'Zeta save interval (minutes)', value: 60},
   {name: 'tide_amplitude', label: 'Tide amplitude (meters)', value: 0.6},
   {name: 'tide_phase', label: 'Tide phase (degree)', value: 0},
 ]
@@ -25,6 +26,7 @@ export const RunProgram = () => {
 
 type RunConfig = {
   dt: number
+  store_dt: number
   tide_amplitude: number
   tide_phase: number
 }

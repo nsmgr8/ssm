@@ -24,7 +24,7 @@ export const CoastTimeSeries = () => (
         <XAxis dataKey="time" tickFormatter={(d) => new Date(d).toLocaleString('en-GB', {timeStyle: 'short'})}>
           <Label value="Time" offset={0} position="bottom" />
         </XAxis>
-        <YAxis domain={[coastLevelMin.value, coastLevelMax.value]} unit=" m" />
+        <YAxis domain={[coastLevelMin.value, coastLevelMax.value]} unit=" m" tickFormatter={(v) => v.toFixed(3)} />
         <Tooltip labelFormatter={(d) => new Date(d).toLocaleString()} />
         <Legend verticalAlign="top" height={36} />
         <Line
@@ -89,8 +89,8 @@ const Title = () => {
         {n > 0 && <div>RMSE: {rmse.toFixed(2)}</div>}
       </>
     )
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
-    console.error(e)
     return 'Please select a coast point in the grid left after loading the result files'
   }
 }
