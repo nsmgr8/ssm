@@ -102,13 +102,14 @@ class EllipticSurgeModel:
 
     def notify(self, current):
         with suppress(ConnectionRefusedError):
-            with wsclient.connect("ws://localhost:8000/ws") as ws:
+            with wsclient.connect("ws://host.docker.internal:8000/ws") as ws:
                 ws.send(
                     json.dumps(
                         dict(
                             name=self.name,
                             current=current,
                             total=self.n_steps,
+                            storm=self.storm.name,
                             state="complete" if current == self.n_steps else "running",
                         )
                     )

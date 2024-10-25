@@ -14,11 +14,15 @@ import {
 } from '../stores/zeta'
 import {Card} from './card'
 import {loadFile} from '../utils/file.load'
-import {useCallback, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {computed} from '@preact/signals-react'
 
+type IntervalType = ReturnType<typeof setInterval>
+
 export const ZetaCard = () => {
-  const [playId, setPlayId] = useState<ReturnType<typeof setInterval>>()
+  const [playId, setPlayId] = useState<IntervalType>()
+
+  useEffect(() => () => clearInterval(playId), [playId])
 
   const play = useCallback(() => {
     if (!playId) {
