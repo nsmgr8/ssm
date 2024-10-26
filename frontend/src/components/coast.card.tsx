@@ -2,7 +2,7 @@ import {Card} from './card'
 import {LoadFile} from './load.file'
 import {loadFile} from '../utils/file.load'
 import {selectedPoint, setupGrid} from '../stores/grid'
-import {stormData} from '../stores/storm'
+import {stormData, stormLocations} from '../stores/storm'
 import {coastLevelMax, coastLevelMin, Coasts, coasts, observed, resetCoasts} from '../stores/coast'
 
 export const CoastsCard = () => {
@@ -29,6 +29,9 @@ const loadCoasts = loadFile({
     if (fileIndex === 0) {
       await setupGrid(data.grid_params, data.grid)
       stormData.value = data.storm
+    }
+    if (data.storm_locations.length > 0) {
+      stormLocations.value = data.storm_locations
     }
     const coasts_data: Coasts = {...coasts.value}
     let [dMin, dMax] = [coastLevelMin.value, coastLevelMax.value]

@@ -127,12 +127,12 @@ const getTooltip = (info: PickingInfo) => {
     return null
   }
   const {threshold} = info.object.contour
-  const [lng, lat] = info.coordinate || []
   const [minVal, maxVal] = threshold.map((x: number) => x + zetaMin.value)
+  const coord = info.coordinate as unknown as [number, number]
   return {
     html: `
       <div>Sea level from ${minVal.toFixed(2)}m to ${maxVal.toFixed(2)}m</div>
-      <div>Location: ${formattedLngLat(lng, lat)}</div>
+      <div>Location: ${formattedLngLat(coord || [])}</div>
     `,
   }
 }

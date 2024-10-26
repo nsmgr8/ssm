@@ -14,13 +14,20 @@ export type StormData = {
   }[]
 }
 
-export const resetStorm = () => (stormData.value = {} as StormData)
+export const resetStorm = () => {
+  stormData.value = {} as StormData
+  stormLocations.value = []
+  currentStormLocation.value = []
+}
 
 export const stormData = signal({} as StormData)
 export const stormName = computed(() => {
   const {name = ''} = stormData.value
   return titleCase(name.replace('-', ' '))
 })
+
+export const stormLocations = signal([] as [number, number][])
+export const currentStormLocation = signal([] as [number, number] | never[])
 
 export const stormTrackGeoJSON = computed(() => {
   const {track = []} = stormData.value

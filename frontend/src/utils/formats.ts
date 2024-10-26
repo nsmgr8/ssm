@@ -1,4 +1,4 @@
-export const formattedLngLat = (lng: number, lat: number) => {
+export const formattedLngLat = ([lng, lat]: [number, number] | never[]) => {
   if (lng === undefined || lat === undefined) {
     return 'unknown'
   }
@@ -23,5 +23,5 @@ export const formatMilliseconds = (milliseconds: number) => {
 export const titleCase = (s: string) =>
   s
     .split(' ')
-    .map((x) => x[0]?.toUpperCase() + x.slice(1))
+    .map((x) => x.charAt(0).toUpperCase() + x.substr(1))
     .join(' ')

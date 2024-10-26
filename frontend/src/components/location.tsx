@@ -7,6 +7,5 @@ type LocationProps = {
 }
 
 export const Location = ({row, column}: LocationProps) => {
-  const [lng, lat] = gridMatrix.value[row][column]
-  return <>{formattedLngLat(lng, lat)}</>
+  return <>{formattedLngLat(gridMatrix.value[row][column])}</>
 }

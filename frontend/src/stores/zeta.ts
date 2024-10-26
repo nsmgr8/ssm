@@ -3,7 +3,7 @@ import {computed, signal} from '@preact/signals-react'
 import {gridMatrix, resetGrid} from './grid'
 import {featureCollection, point} from '@turf/turf'
 import {interpolateYlOrRd} from 'd3-scale-chromatic'
-import {resetStorm} from './storm'
+import {currentStormLocation, resetStorm} from './storm'
 
 type ZetaData = {
   data: [row: number, column: number, value: number][]
@@ -27,6 +27,7 @@ export const resetZeta = () => {
   zetaDt.value = 0
   currentZetaIdx.value = 0
   stormStartedAt.value = 0
+  numBands.value = 10
   resetGrid()
   resetStorm()
 }
@@ -41,7 +42,9 @@ export const numBands = signal(10)
 export const stormStartedAt = signal(0)
 export const currentStormTime = computed(() => new Date(stormStartedAt.value + currentZetaIdx.value * zetaDt.value))
 export const currentStorm = computed(() =>
-  zetas.value.both.length > currentZetaIdx.value ? zetas.value.both[currentZetaIdx.value].storm_location : []
+  zetas.value.both.length > currentZetaIdx.value
+    ? zetas.value.both[currentZetaIdx.value].storm_location
+    : currentStormLocation.value
 )
 export const currentStormGeoJSON = computed(() =>
   currentStorm.value.length === 2 ? point(currentStorm.value) : featureCollection([])
@@ -70,7 +73,7 @@ export const peak = computed(() => {
     both: {location: [], value: -10000},
     surge: {location: [], value: -10000},
     tide: {location: [], value: -10000},
-  } as Record<RunType, {location: number[]; value: number}>
+  } as Record<RunType, {location: [number, number] | never[]; value: number}>
 
   runTypes.forEach((key) => {
     if (zetas.value[key].length > currentZetaIdx.value) {

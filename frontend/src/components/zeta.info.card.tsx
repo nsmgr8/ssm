@@ -33,13 +33,13 @@ export const InfoCard = ({type}: InfoCardProps) => {
             </TableRow>
             <TableRow>
               <TableCellHeading>Peak at</TableCellHeading>
-              <TableCell>{formattedLngLat(location[0], location[1])}</TableCell>
+              <TableCell>{formattedLngLat(location)}</TableCell>
             </TableRow>
             {type !== 'tide' && (
               <>
                 <TableRow>
                   <TableCellHeading>Storm center</TableCellHeading>
-                  <TableCell>{formattedLngLat(currentStorm.value[0], currentStorm.value[1])}</TableCell>
+                  <TableCell>{formattedLngLat(currentStorm.value)}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCellHeading>Storm distance</TableCellHeading>

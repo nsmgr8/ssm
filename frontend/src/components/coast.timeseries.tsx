@@ -1,14 +1,16 @@
+import {EChartsOption} from 'echarts'
 import {chartData, coastLevelMax, coastLevelMin, observed} from '../stores/coast'
 import {gridMatrix, selectedPoint} from '../stores/grid'
-import {stormData, stormName} from '../stores/storm'
-import {runTypes} from '../stores/zeta'
+import {currentStormLocation, stormLocations, stormName} from '../stores/storm'
+import {RunType, runTypes} from '../stores/zeta'
 import {formattedLngLat} from '../utils/formats'
 import {EChart} from '@kbox-labs/react-echarts'
+import {ArrayElement} from '../utils/types'
+import {distance} from '@turf/turf'
 
 export const CoastTimeSeries = () => {
   const {row, column} = selectedPoint.value
-  const [lng, lat] = gridMatrix.value[row]?.[column] || []
-  const location = formattedLngLat(lng, lat)
+  const location = formattedLngLat(gridMatrix.value[row]?.[column] || [])
   const sum = chartData.value.both.reduce((acc, [time, value]) => {
     const [_, ovalue] = observed.value.find(([otime]) => otime === time) || []
     if (ovalue !== undefined) {
@@ -20,6 +22,7 @@ export const CoastTimeSeries = () => {
   return (
     <div style={{position: 'relative', height: '100%', display: 'flex', alignItems: 'center'}}>
       <EChart
+        onMouseOut={() => (currentStormLocation.value = [])}
         style={{
           height: '98%',
           width: '100%',
@@ -40,7 +43,28 @@ ${rmse}`,
         }}
         tooltip={{
           trigger: 'axis',
-          valueFormatter: (x) => (x !== undefined ? `${(+x).toFixed(2)} m` : ''),
+          formatter: (event) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const e = event as any[]
+            currentStormLocation.value = stormLocations.value[e[0].dataIndex]
+            const time = new Date(e[0].data[0]).toLocaleString('en-GB', {dateStyle: 'medium', timeStyle: 'short'})
+            const heading = `<div style='font-weight:bold;border-bottom:1px solid #555'>${time}</div>`
+            const items = e
+              .map((x) => {
+                const color = `<div style='background-color:${x.color};padding:0px 5px'>&nbsp;</div>`
+                const name = `<div>${x.seriesName}</div>`
+                const key = `<div style='display:flex;gap:3px'>${color}${name}</div>`
+                const value = `<div style='font-weight:bold'>${x.data[1].toFixed(3)} m</div>`
+                return `<div style='display:flex;justify-content:space-between;gap:5px;margin:5px 0'>${key}${value}</div>`
+              })
+              .join('')
+            const storm_dist = distance(gridMatrix.value[row][column], currentStormLocation.value)
+            const storm = `<div style='border-top:1px solid #555;padding-top:3px'>
+              <div>Storm at <span style='font-weight:bold'>${formattedLngLat(currentStormLocation.value)}</span></div>
+              <div>Storm distance: <span style='font-weight:bold'>${storm_dist.toFixed(3)} km</span></div>
+            </div>`
+            return [heading, items, storm].join('')
+          },
         }}
         toolbox={{
           feature: {
@@ -87,35 +111,9 @@ ${rmse}`,
           },
         }}
         series={[
-          {
-            name: 'both',
-            type: 'line',
-            lineStyle: {
-              width: 3,
-            },
-            symbol: 'none',
-            data: chartData.value.both,
-          },
-          {
-            name: 'surge',
-            type: 'line',
-            lineStyle: {
-              width: 3,
-              type: [10],
-            },
-            symbol: 'none',
-            data: chartData.value.surge,
-          },
-          {
-            name: 'tide',
-            type: 'line',
-            lineStyle: {
-              width: 3,
-              type: [5, 10, 15],
-            },
-            symbol: 'none',
-            data: chartData.value.tide,
-          },
+          seriesConf('both'),
+          seriesConf('surge', [5]),
+          seriesConf('tide', [5, 10, 15]),
           {
             name: 'observed',
             type: 'scatter',
@@ -123,12 +121,23 @@ ${rmse}`,
           },
         ]}
       />
-      <Title />
+      <Message />
     </div>
   )
 }
 
-const Title = () => {
+const seriesConf = (name: RunType, type: number[] = []): ArrayElement<EChartsOption['series']> => ({
+  name,
+  type: 'line',
+  lineStyle: {
+    width: 3,
+    type,
+  },
+  symbol: 'none',
+  data: chartData.value[name],
+})
+
+const Message = () => {
   let message: string | null = null
   const {row, column} = selectedPoint.value
   if (row < 0 || column < 0) {
