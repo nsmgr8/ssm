@@ -1,9 +1,10 @@
-import {useEffect} from 'react'
+import {useCallback, useEffect} from 'react'
 import {Layer, Source, useMap} from 'react-map-gl/maplibre'
 import {gridLinesGeoJSON, gridMatrix, gridPointsGeoJSON, showUVZ} from '../stores/grid'
 import {gridDomain} from '../utils/grid'
 import {useKeyboardSelection} from '../hooks/grid.select'
 import {MapRef} from 'react-map-gl'
+import {useFitToGrid} from '../hooks/grid.fit'
 
 const emptyGeoJSON = {
   type: 'FeatureCollection',
@@ -13,12 +14,18 @@ const emptyGeoJSON = {
 export const Grid = ({coastOnly = false}) => {
   const {current: map} = useMap()
 
-  useEffect(() => {
+  const fitMap = useCallback(() => {
     if (gridMatrix.value.length) {
       map?.fitBounds(gridDomain(gridMatrix.value))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map, gridMatrix.value])
+
+  useEffect(() => {
+    fitMap()
+  }, [fitMap])
+
+  useFitToGrid(fitMap)
 
   useKeyboardSelection(map as unknown as MapRef, coastOnly)
 

@@ -17,6 +17,7 @@ import {loadFile} from '../utils/file.load'
 import {useCallback, useEffect, useState} from 'react'
 import {computed} from '@preact/signals-react'
 import {IntervalType} from '../utils/types'
+import {fitToGrid} from '../hooks/grid.fit'
 
 export const ZetaCard = () => {
   const [playId, setPlayId] = useState<IntervalType>()
@@ -59,6 +60,9 @@ export const ZetaCard = () => {
             </button>
             <button type="button" onClick={clear}>
               Clear
+            </button>
+            <button type="button" onClick={fitToGrid}>
+              Fit map
             </button>
           </div>
           <div>

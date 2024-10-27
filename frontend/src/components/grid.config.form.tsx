@@ -4,6 +4,7 @@ import {LoadFile} from './load.file'
 import {api} from '../utils/api'
 import {FormInput} from './form.input'
 import {loadFile} from '../utils/file.load'
+import {fitToGrid} from '../hooks/grid.fit'
 
 export const GridConfigForm = () => (
   <form onSubmit={submitGridConf}>
@@ -20,6 +21,9 @@ export const GridConfigForm = () => (
       <FormInput name="origin.latitude" value={gridConfig.value.origin?.latitude} label="Origin latitude (degree)" />
       <div style={{display: 'flex', justifyContent: 'space-between'}}>
         <input type="submit" value="Update" />
+        <button type="button" onClick={fitToGrid}>
+          Fit map
+        </button>
         <button type="button" onClick={save}>
           Save
         </button>

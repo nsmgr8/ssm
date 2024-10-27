@@ -9,6 +9,7 @@ import {useCallback, useState} from 'react'
 import {formattedLngLat} from '../utils/formats'
 import {InfoCard} from './zeta.info.card'
 import {featureCollection, point} from '@turf/turf'
+import {useFitToGrid} from '../hooks/grid.fit'
 
 export const ZetaMapPage = () => (
   <MapProvider>
@@ -49,15 +50,20 @@ const ZetaMap = ({layer, type}: ZetaMapProps) => {
     }
     if (!hasLoaded && layer?.isLoaded) {
       setHasLoaded(true)
-
-      const viewport = layer.context.viewport as WebMercatorViewport
-      const {longitude, latitude, zoom} = viewport.fitBounds(
-        layer.getBounds() as [[number, number], [number, number]],
-        {padding: 10}
-      )
-      setInitialViewState({longitude, latitude, zoom})
+      fitMap()
     }
   }
+
+  const fitMap = useCallback(() => {
+    if (!layer) return
+    const viewport = layer.context.viewport as WebMercatorViewport
+    const {longitude, latitude, zoom} = viewport.fitBounds(layer.getBounds() as [[number, number], [number, number]], {
+      padding: 10,
+    })
+    setInitialViewState({longitude, latitude, zoom})
+  }, [layer])
+
+  useFitToGrid(fitMap)
 
   const mapId = `zeta-map-${type}`
   const deckId = `zeta-deck-${type}`

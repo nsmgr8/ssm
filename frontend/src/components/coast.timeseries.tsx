@@ -22,7 +22,6 @@ export const CoastTimeSeries = () => {
   return (
     <div style={{position: 'relative', height: '100%', display: 'flex', alignItems: 'center'}}>
       <EChart
-        onMouseOut={() => (currentStormLocation.value = [])}
         style={{
           height: '98%',
           width: '100%',

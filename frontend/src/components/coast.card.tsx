@@ -4,6 +4,7 @@ import {loadFile} from '../utils/file.load'
 import {selectedPoint, setupGrid} from '../stores/grid'
 import {stormData, stormLocations} from '../stores/storm'
 import {coastLevelMax, coastLevelMin, Coasts, coasts, observed, resetCoasts} from '../stores/coast'
+import {fitToGrid} from '../hooks/grid.fit'
 
 export const CoastsCard = () => {
   return (
@@ -14,6 +15,9 @@ export const CoastsCard = () => {
           <LoadFile id="observed-file" label="Load observed file" onChange={loadObserved} />
           <button type="button" onClick={resetCoasts}>
             Clear
+          </button>
+          <button type="button" onClick={fitToGrid}>
+            Fit map
           </button>
         </>
       )}
