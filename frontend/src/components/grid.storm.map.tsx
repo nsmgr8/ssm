@@ -3,7 +3,31 @@ import {Grid} from './grid'
 import {Storm} from './storm'
 import {selectedPoint} from '../stores/grid'
 
-export const GridStormMap = () => (
+const cartostyle = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
+const osmstyle = {
+  version: 8,
+  sources: {
+    osm: {
+      type: 'raster',
+      tiles: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
+      tileSize: 256,
+      attribution: '&copy; OpenStreetMap Contributors',
+      maxzoom: 19,
+    },
+  },
+  layers: [
+    {
+      id: 'osm',
+      type: 'raster',
+      source: 'osm', // This must match the source key above
+    },
+  ],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+} as any
+const dark = true
+const style = dark ? cartostyle : osmstyle
+
+export const GridStormMap = ({coastOnly = false}) => (
   <MapGL
     reuseMaps
     initialViewState={{
@@ -11,13 +35,13 @@ export const GridStormMap = () => (
       latitude: 0,
       zoom: 1,
     }}
-    mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+    mapStyle={style}
     interactiveLayerIds={['sea', 'coast', 'land']}
     onMouseMove={onHover}
     onClick={selectPoint}
     keyboard={false}
   >
-    <Grid />
+    <Grid coastOnly={coastOnly} />
     <Storm />
   </MapGL>
 )

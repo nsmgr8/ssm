@@ -3,13 +3,14 @@ import {Layer, Source, useMap} from 'react-map-gl/maplibre'
 import {gridLinesGeoJSON, gridMatrix, gridPointsGeoJSON, showUVZ} from '../stores/grid'
 import {gridDomain} from '../utils/grid'
 import {useKeyboardSelection} from '../hooks/grid.select'
+import {MapRef} from 'react-map-gl'
 
 const emptyGeoJSON = {
   type: 'FeatureCollection',
   features: [],
 }
 
-export const Grid = () => {
+export const Grid = ({coastOnly = false}) => {
   const {current: map} = useMap()
 
   useEffect(() => {
@@ -19,7 +20,7 @@ export const Grid = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map, gridMatrix.value])
 
-  useKeyboardSelection()
+  useKeyboardSelection(map as unknown as MapRef, coastOnly)
 
   if (!gridLinesGeoJSON.value.type) return null
   return (
@@ -54,24 +55,28 @@ export const Grid = () => {
           paint={{'circle-color': '#aaf', 'circle-radius': 10}}
           filter={['in', 'selected', ['string', ['get', 'selected']]]}
         />
-        <Layer
-          id="sea"
-          type="circle"
-          paint={{'circle-color': '#333', 'circle-radius': 3}}
-          filter={['in', 'sea', ['string', ['get', 'type']]]}
-        />
+        {!coastOnly && (
+          <Layer
+            id="sea"
+            type="circle"
+            paint={{'circle-color': '#333', 'circle-radius': 3}}
+            filter={['in', 'sea', ['string', ['get', 'type']]]}
+          />
+        )}
         <Layer
           id="coast"
           type="circle"
           paint={{'circle-color': '#a33', 'circle-radius': 5}}
           filter={['in', 'coast', ['string', ['get', 'type']]]}
         />
-        <Layer
-          id="land"
-          type="circle"
-          paint={{'circle-color': '#aaa', 'circle-radius': 4}}
-          filter={['in', 'land', ['string', ['get', 'type']]]}
-        />
+        {!coastOnly && (
+          <Layer
+            id="land"
+            type="circle"
+            paint={{'circle-color': '#aaa', 'circle-radius': 4}}
+            filter={['in', 'land', ['string', ['get', 'type']]]}
+          />
+        )}
       </Source>
     </>
   )

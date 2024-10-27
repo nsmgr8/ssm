@@ -6,7 +6,7 @@ export const CoastsPage = () => (
   <>
     <div style={{display: 'flex'}}>
       <div style={{width: '50vw', height: '100vh'}}>
-        <GridStormMap />
+        <GridStormMap coastOnly={true} />
       </div>
       <div style={{width: '50vw', height: '100vh'}}>
         <CoastTimeSeries />
