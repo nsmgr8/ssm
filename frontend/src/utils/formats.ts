@@ -2,9 +2,9 @@ export const formattedLngLat = ([lng, lat]: [number, number] | never[]) => {
   if (lng === undefined || lat === undefined) {
     return 'unknown'
   }
-  const lngStr = lng > 0 ? 'N' : 'S'
-  const latStr = lat > 0 ? 'E' : 'W'
-  return `${lng.toFixed(2)}°${lngStr}, ${lat.toFixed(2)}°${latStr}`
+  const lngStr = lng > 0 ? `${lng.toFixed(2)}°E` : `${Math.abs(lng).toFixed(2)}°W`
+  const latStr = lat > 0 ? `${lat.toFixed(2)}°N` : `${Math.abs(lat).toFixed(2)}°S`
+  return `${lngStr}, ${latStr}`
 }
 
 export const formatMilliseconds = (milliseconds: number) => {

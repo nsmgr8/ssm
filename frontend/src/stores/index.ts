@@ -12,3 +12,4 @@ export const resetAllStores = () => {
 }
 
 export const showCard = signal(true)
+export const hoverLocation = signal([] as [number, number] | never[])

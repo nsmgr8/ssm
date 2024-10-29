@@ -2,6 +2,7 @@ import MapGL, {MapLayerMouseEvent} from 'react-map-gl/maplibre'
 import {Grid} from './grid'
 import {Storm} from './storm'
 import {selectedPoint} from '../stores/grid'
+import {hoverLocation} from '../stores'
 
 const cartostyle = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
 const osmstyle = {
@@ -46,7 +47,8 @@ export const GridStormMap = ({coastOnly = false}) => (
   </MapGL>
 )
 
-const onHover = ({features, target}: MapLayerMouseEvent) => {
+const onHover = ({lngLat: {lng, lat}, features, target}: MapLayerMouseEvent) => {
+  hoverLocation.value = [lng, lat]
   if (features?.length === 1) {
     target.getCanvasContainer().style.cursor = 'pointer'
   } else {

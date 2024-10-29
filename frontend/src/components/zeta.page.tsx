@@ -10,6 +10,7 @@ import {formattedLngLat} from '../utils/formats'
 import {InfoCard} from './zeta.info.card'
 import {distance, featureCollection, point} from '@turf/turf'
 import {useFitToGrid} from '../hooks/grid.fit'
+import {hoverLocation} from '../stores'
 
 export const ZetaMapPage = () => (
   <MapProvider>
@@ -72,7 +73,8 @@ const ZetaMap = ({layer, type}: ZetaMapProps) => {
 
   const onStormPoint = useCallback(
     (callback: (feature: MapGeoJSONFeature) => void) =>
-      ({x, y}: PickingInfo) => {
+      ({x, y, coordinate}: PickingInfo) => {
+        hoverLocation.value = (coordinate as [number, number]) || []
         if (!map || type === 'tide') return
         const [feature] = map.queryRenderedFeatures([x, y], {
           layers: ['storm-point'],
