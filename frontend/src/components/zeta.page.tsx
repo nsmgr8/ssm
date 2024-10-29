@@ -2,13 +2,13 @@ import MapGL, {Layer, MapGeoJSONFeature, MapProvider, Source, useMap} from 'reac
 import {Storm} from './storm'
 import DeckGL from '@deck.gl/react'
 import {ZetaCard} from './zeta.card'
-import {currentZetaIdx, peak, RunType, zetaDt, zetaLayer, zetaMin} from '../stores/zeta'
+import {currentStorm, currentZetaIdx, peak, RunType, zetaDt, zetaLayer, zetaMin} from '../stores/zeta'
 import {MapViewState, PickingInfo, WebMercatorViewport} from '@deck.gl/core'
 import {ContourLayer} from '@deck.gl/aggregation-layers'
 import {useCallback, useState} from 'react'
 import {formattedLngLat} from '../utils/formats'
 import {InfoCard} from './zeta.info.card'
-import {featureCollection, point} from '@turf/turf'
+import {distance, featureCollection, point} from '@turf/turf'
 import {useFitToGrid} from '../hooks/grid.fit'
 
 export const ZetaMapPage = () => (
@@ -137,8 +137,28 @@ const getTooltip = (info: PickingInfo) => {
   const coord = info.coordinate as unknown as [number, number]
   return {
     html: `
-      <div>Sea level from ${minVal.toFixed(2)}m to ${maxVal.toFixed(2)}m</div>
-      <div>Location: ${formattedLngLat(coord || [])}</div>
+<table style="border-collapse: collapse;margin:-10px">
+  <tbody>
+    <tr ${tooltipTRStyle}>
+      <th ${tooltipTHStyle}>Sea level</th>
+      <td ${tooltipTDStyle}>${minVal.toFixed(2)} m</td>
+      <td ${tooltipTDStyle}>${maxVal.toFixed(2)} m</td>
+    </tr>
+    <tr ${tooltipTRStyle}>
+      <th ${tooltipTHStyle}>Location</th>
+      <td ${tooltipTDStyle} colspan="2">${formattedLngLat(coord || [])}</td>
+    </tr>
+    <tr ${tooltipTRStyle}>
+      <th ${tooltipTHStyle}>Storm distance</th>
+      <td ${tooltipTDStyle} colspan="2">${distance(coord, currentStorm.value).toFixed(2)} km</td>
+    </tr>
+  </tbody>
+</table>
     `,
+    style: {backgroundColor: 'white', color: 'black'},
   }
 }
+
+const tooltipTRStyle = `style="border:1px solid #aaa"`
+const tooltipTHStyle = `style="text-align:right;padding:5px 10px"`
+const tooltipTDStyle = `style="border-left:1px solid #aaa;padding:5px 10px;font-family:monospace"`

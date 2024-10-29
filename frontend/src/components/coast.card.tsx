@@ -5,23 +5,26 @@ import {selectedPoint, setupGrid} from '../stores/grid'
 import {stormData, stormLocations} from '../stores/storm'
 import {coastLevelMax, coastLevelMin, Coasts, coasts, observed, resetCoasts} from '../stores/coast'
 import {fitToGrid} from '../hooks/grid.fit'
+import {showCard} from '../stores'
 
 export const CoastsCard = () => {
   return (
-    <Card>
-      <LoadFile id="coasts-file" label="Load coast files" onChange={loadCoasts} multiple />
-      {Object.keys(coasts.value).length > 0 && (
-        <>
-          <LoadFile id="observed-file" label="Load observed file" onChange={loadObserved} />
-          <button type="button" onClick={resetCoasts}>
-            Clear
-          </button>
-          <button type="button" onClick={fitToGrid}>
-            Fit map
-          </button>
-        </>
-      )}
-    </Card>
+    showCard.value && (
+      <Card>
+        <LoadFile id="coasts-file" label="Load coast files" onChange={loadCoasts} multiple />
+        {Object.keys(coasts.value).length > 0 && (
+          <>
+            <LoadFile id="observed-file" label="Load observed file" onChange={loadObserved} />
+            <button type="button" onClick={resetCoasts}>
+              Clear
+            </button>
+            <button type="button" onClick={fitToGrid}>
+              Fit map
+            </button>
+          </>
+        )}
+      </Card>
+    )
   )
 }
 

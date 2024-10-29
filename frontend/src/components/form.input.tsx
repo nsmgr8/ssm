@@ -2,9 +2,12 @@ type FormInputProps = {
   label: string
   name: string
   value: number
+  min?: number
+  max?: number
+  step?: string
 }
 
-export const FormInput = ({label, name, value}: FormInputProps) => (
+export const FormInput = ({label, name, value, min = 0, max, step = 'any'}: FormInputProps) => (
   <div
     style={{
       display: 'flex',
@@ -17,7 +20,9 @@ export const FormInput = ({label, name, value}: FormInputProps) => (
       id={`input-${name}`}
       name={name}
       type="number"
-      step="any"
+      min={min}
+      max={max}
+      step={step}
       defaultValue={value}
       style={{width: '70px', marginLeft: '5px'}}
     />

@@ -2,52 +2,63 @@ import {distance} from '@turf/turf'
 import {zetas, currentStormTime, RunType, currentStorm, peak} from '../stores/zeta'
 import {formattedLngLat} from '../utils/formats'
 import {Card} from './card'
-import {stormData} from '../stores/storm'
+import {stormName} from '../stores/storm'
 import {ComponentProps} from 'react'
+import {ContourBands} from './contour.bands'
 
 export const InfoCard = ({type}: InfoCardProps) => {
   const {location, value} = peak.value[type]
+  const hasData = zetas.value[type].length > 0 && currentStorm.value.length === 2
   return (
     <Card style={{position: 'absolute', right: 10, left: ''}}>
       <table style={{borderCollapse: 'collapse'}}>
         <caption style={{fontWeight: 'bold', borderBottom: '1px solid black', textWrap: 'nowrap'}}>
           <div style={{display: 'flex', justifyContent: 'space-between', gap: 10}}>
-            <div>{type === 'tide' ? '' : stormData.value.name}</div>
+            <div>{type === 'tide' ? '' : stormName.value}</div>
             <div>{label(type)}</div>
           </div>
         </caption>
-        {zetas.value[type].length > 0 && currentStorm.value.length === 2 && (
-          <tbody>
-            <TableRow>
-              <TableCellHeading>Time</TableCellHeading>
-              <TableCell>
-                {currentStormTime.value.toLocaleString('en-GB', {
-                  dateStyle: 'medium',
-                  timeStyle: 'short',
-                })}
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCellHeading>Peak value</TableCellHeading>
-              <TableCell>{value.toFixed(2)} meters</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCellHeading>Peak at</TableCellHeading>
-              <TableCell>{formattedLngLat(location)}</TableCell>
-            </TableRow>
-            {type !== 'tide' && (
-              <>
-                <TableRow>
-                  <TableCellHeading>Storm center</TableCellHeading>
-                  <TableCell>{formattedLngLat(currentStorm.value)}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCellHeading>Storm distance</TableCellHeading>
-                  <TableCell>{distance(location, currentStorm.value).toFixed(2)} km</TableCell>
-                </TableRow>
-              </>
-            )}
-          </tbody>
+        {hasData && (
+          <>
+            <tbody>
+              <TableRow>
+                <TableCellHeading>Time</TableCellHeading>
+                <TableCell>
+                  {currentStormTime.value.toLocaleString('en-GB', {
+                    dateStyle: 'medium',
+                    timeStyle: 'short',
+                  })}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCellHeading>Peak value</TableCellHeading>
+                <TableCell>{value.toFixed(2)} meters</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCellHeading>Peak at</TableCellHeading>
+                <TableCell>{formattedLngLat(location)}</TableCell>
+              </TableRow>
+              {type !== 'tide' && (
+                <>
+                  <TableRow>
+                    <TableCellHeading>Storm center</TableCellHeading>
+                    <TableCell>{formattedLngLat(currentStorm.value)}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCellHeading>Storm distance</TableCellHeading>
+                    <TableCell>{distance(location, currentStorm.value).toFixed(2)} km</TableCell>
+                  </TableRow>
+                </>
+              )}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td style={{padding: 0}} colSpan={2}>
+                  <ContourBands />
+                </td>
+              </tr>
+            </tfoot>
+          </>
         )}
       </table>
     </Card>

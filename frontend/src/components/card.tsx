@@ -14,6 +14,7 @@ export const Card = ({top = 10, left = 10, children, style, ...props}: CardProps
       left,
       backgroundColor: 'white',
       padding: '10px',
+      borderRadius: '5px',
       ...style,
     }}
   >

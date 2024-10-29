@@ -11,14 +11,26 @@ export const GridConfigForm = () => (
     <fieldset>
       <legend>Grid</legend>
       <LoadFile id="input-map-file" label="Load grid" onChange={loadFile({init: initGrid, onLoad: onFileLoad})} />
-      <FormInput name="m" value={gridConfig.value.m} label="Number of rows (m)" />
-      <FormInput name="n" value={gridConfig.value.n} label="Number of columns (n)" />
-      <FormInput name="dr" value={gridConfig.value.dr} label="Radial interval (meters)" />
-      <FormInput name="e" value={gridConfig.value.e} label="Ellipse eccentricity (0 <= e < 1)" />
-      <FormInput name="alpha" value={gridConfig.value.alpha} label="Start angle (degree)" />
-      <FormInput name="beta" value={gridConfig.value.beta} label="Stop angle (degree)" />
-      <FormInput name="origin.longitude" value={gridConfig.value.origin?.longitude} label="Origin longitude (degree)" />
-      <FormInput name="origin.latitude" value={gridConfig.value.origin?.latitude} label="Origin latitude (degree)" />
+      <FormInput name="m" value={gridConfig.value.m} min={1} label="Number of rows (m)" />
+      <FormInput name="n" value={gridConfig.value.n} min={1} label="Number of columns (n)" />
+      <FormInput name="dr" value={gridConfig.value.dr} min={1} label="Radial interval (meters)" />
+      <FormInput name="e" value={gridConfig.value.e} max={0.999999} label="Ellipse eccentricity (0 <= e < 1)" />
+      <FormInput name="alpha" value={gridConfig.value.alpha} max={359.99999} label="Start angle (degree)" />
+      <FormInput name="beta" value={gridConfig.value.beta} max={359.99999} label="Stop angle (degree)" />
+      <FormInput
+        name="origin.longitude"
+        value={gridConfig.value.origin?.longitude}
+        min={-180}
+        max={180}
+        label="Origin longitude (degree)"
+      />
+      <FormInput
+        name="origin.latitude"
+        value={gridConfig.value.origin?.latitude}
+        min={-90}
+        max={90}
+        label="Origin latitude (degree)"
+      />
       <div style={{display: 'flex', justifyContent: 'space-between'}}>
         <input type="submit" value="Update" />
         <button type="button" onClick={fitToGrid}>

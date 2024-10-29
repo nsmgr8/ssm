@@ -1,23 +1,13 @@
 import {LoadFile} from './load.file'
 import {GridConfig, GridPoint, setupGrid} from '../stores/grid'
 import {StormData, stormData} from '../stores/storm'
-import {
-  currentZetaIdx,
-  getBands,
-  numBands,
-  resetZeta,
-  stormStartedAt,
-  zetaDt,
-  zetaMax,
-  zetaMin,
-  zetas,
-} from '../stores/zeta'
+import {currentZetaIdx, numBands, resetZeta, stormStartedAt, zetaDt, zetaMax, zetaMin, zetas} from '../stores/zeta'
 import {Card} from './card'
 import {loadFile} from '../utils/file.load'
 import {useCallback, useEffect, useState} from 'react'
-import {computed} from '@preact/signals-react'
 import {IntervalType} from '../utils/types'
 import {fitToGrid} from '../hooks/grid.fit'
+import {showCard} from '../stores'
 
 export const ZetaCard = () => {
   const [playId, setPlayId] = useState<IntervalType>()
@@ -41,72 +31,51 @@ export const ZetaCard = () => {
   }, [pause])
 
   return (
-    <Card>
-      <LoadFile id="zeta-file" label="Load zeta files" onChange={loadZeta} multiple />
-      {zetas.value.both.length > 0 && (
-        <>
-          <div style={{display: 'flex', gap: 5, marginBottom: '5px'}}>
-            <button type="button" onClick={nextZeta(-1)}>
-              Previous
-            </button>
-            <button type="button" onClick={nextZeta(1)}>
-              Next
-            </button>
-            <button type="button" onClick={play}>
-              Play
-            </button>
-            <button type="button" onClick={pause}>
-              Pause
-            </button>
-            <button type="button" onClick={clear}>
-              Clear
-            </button>
-            <button type="button" onClick={fitToGrid}>
-              Fit map
-            </button>
-          </div>
-          <div>
-            <div style={{display: 'grid', gridTemplateColumns: `repeat(${numBands.value + 1}, 1fr)`}}>
-              {getBands(numBands.value).map(({color: [r, g, b]}, idx) => (
-                <div key={idx} style={{backgroundColor: `rgb(${r}, ${g}, ${b})`}}>
-                  &nbsp;
-                </div>
-              ))}
+    showCard.value && (
+      <Card>
+        <LoadFile id="zeta-file" label="Load zeta files" onChange={loadZeta} multiple />
+        {zetas.value.both.length > 0 && (
+          <>
+            <div>
+              <div style={{display: 'flex', gap: 5, marginBottom: '5px'}}>
+                <button type="button" onClick={nextZeta(-1)}>
+                  Previous
+                </button>
+                <button type="button" onClick={nextZeta(1)}>
+                  Next
+                </button>
+                <button type="button" onClick={play}>
+                  Play
+                </button>
+                <button type="button" onClick={pause}>
+                  Pause
+                </button>
+                <button type="button" onClick={clear}>
+                  Clear
+                </button>
+                <button type="button" onClick={fitToGrid}>
+                  Fit map
+                </button>
+              </div>
+              <div style={{display: 'flex', justifyContent: 'space-between', gap: 10}}>
+                <label htmlFor="id-num-bands">Bands ({numBands.value})</label>
+                <input
+                  style={{flexGrow: 1}}
+                  type="range"
+                  defaultValue={numBands.value}
+                  min={10}
+                  max={40}
+                  step={1}
+                  onChange={({target: {value}}) => (numBands.value = +value)}
+                />
+              </div>
             </div>
-            <div style={{display: 'flex', justifyContent: 'space-between'}}>
-              {zetaBands.value.map((x) => (
-                <span key={x}>{x.toFixed(1)}</span>
-              ))}
-            </div>
-            <div style={{display: 'flex', justifyContent: 'space-between', gap: 10}}>
-              <label htmlFor="id-num-bands">Bands ({numBands.value})</label>
-              <input
-                style={{flexGrow: 1}}
-                type="range"
-                defaultValue={numBands.value}
-                min={10}
-                max={100}
-                step={1}
-                onChange={({target: {value}}) => (numBands.value = +value)}
-              />
-            </div>
-          </div>
-        </>
-      )}
-    </Card>
+          </>
+        )}
+      </Card>
+    )
   )
 }
-
-const zetaBands = computed(() => {
-  const diff = zetaMax.value - zetaMin.value
-  return [
-    zetaMin.value,
-    zetaMin.value + diff / 4,
-    zetaMin.value + diff / 2,
-    zetaMin.value + (diff / 4) * 3,
-    zetaMax.value,
-  ]
-})
 
 const nextZeta = (direction: 1 | -1) => () => {
   const idx = currentZetaIdx.value + direction

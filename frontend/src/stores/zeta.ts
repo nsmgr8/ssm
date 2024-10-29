@@ -2,7 +2,7 @@ import {ContourLayer} from '@deck.gl/aggregation-layers'
 import {computed, signal} from '@preact/signals-react'
 import {gridMatrix, resetGrid} from './grid'
 import {featureCollection, point} from '@turf/turf'
-import {interpolateYlOrRd} from 'd3-scale-chromatic'
+import {interpolateTurbo} from 'd3-scale-chromatic'
 import {currentStormLocation, resetStorm} from './storm'
 
 type ZetaData = {
@@ -61,7 +61,7 @@ export const zetaLayer = computed(() => {
         getWeight: (d) => d[2] - zetaMin.value,
         pickable: true,
         aggregation: 'MEAN',
-        contours: getBands(numBands.value),
+        contours: contourBands.value,
         cellSize: 17000,
       })
     }
@@ -90,17 +90,20 @@ export const peak = computed(() => {
 
 type ColorTuple = [number, number, number]
 
-export function getBands(nBands = 10) {
+export const peakBand = signal(-1)
+
+export const contourBands = computed(() => {
+  const nBands = numBands.value
   const dVal = (zetaMax.value - zetaMin.value) / (nBands + 1)
   const bands: {threshold: [number, number]; color: ColorTuple}[] = []
   for (let i = 0; i <= nBands; i++) {
-    const low = i * dVal + 0.1
+    const low = i * dVal + (i === 0 ? 1e-10 : 0)
     const high = low + dVal
-    const color = interpolateYlOrRd(i / nBands)
+    const color = interpolateTurbo(i / nBands)
       .replace(/(rgb.)|([^\d]*$)/g, '')
       .split(',')
       .map((x) => +x) as ColorTuple
     bands.push({threshold: [low, high], color})
   }
   return bands
-}
+})

@@ -1,3 +1,4 @@
+import {signal} from '@preact/signals-react'
 import {resetCoasts} from './coast'
 import {resetGrid} from './grid'
 import {resetStorm} from './storm'
@@ -9,3 +10,5 @@ export const resetAllStores = () => {
   resetCoasts()
   resetZeta()
 }
+
+export const showCard = signal(true)
