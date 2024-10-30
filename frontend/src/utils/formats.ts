@@ -23,5 +23,5 @@ export const formatMilliseconds = (milliseconds: number) => {
 export const titleCase = (s: string) =>
   s
     .split(' ')
-    .map((x) => x.charAt(0).toUpperCase() + x.substr(1))
+    .map((x) => x.charAt(0).toUpperCase() + x.substring(1))
     .join(' ')

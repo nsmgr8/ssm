@@ -2,8 +2,8 @@ import {ContourLayer} from '@deck.gl/aggregation-layers'
 import {computed, signal} from '@preact/signals-react'
 import {gridMatrix, resetGrid} from './grid'
 import {featureCollection, point} from '@turf/turf'
-import {interpolateTurbo} from 'd3-scale-chromatic'
 import {currentStormLocation, resetStorm} from './storm'
+import {availableBands, colorBands} from '../utils/colors'
 
 type ZetaData = {
   data: [row: number, column: number, value: number][]
@@ -88,22 +88,9 @@ export const peak = computed(() => {
   return result
 })
 
-type ColorTuple = [number, number, number]
-
 export const peakBand = signal(-1)
 
-export const contourBands = computed(() => {
-  const nBands = numBands.value
-  const dVal = (zetaMax.value - zetaMin.value) / (nBands + 1)
-  const bands: {threshold: [number, number]; color: ColorTuple}[] = []
-  for (let i = 0; i <= nBands; i++) {
-    const low = i * dVal + (i === 0 ? 1e-10 : 0)
-    const high = low + dVal
-    const color = interpolateTurbo(i / nBands)
-      .replace(/(rgb.)|([^\d]*$)/g, '')
-      .split(',')
-      .map((x) => +x) as ColorTuple
-    bands.push({threshold: [low, high], color})
-  }
-  return bands
-})
+export const contourBands = computed(() =>
+  colorBands(availableBands[currentBandColor.value], zetaMin.value, zetaMax.value)
+)
+export const currentBandColor = signal('Turbo')
