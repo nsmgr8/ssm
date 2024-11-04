@@ -1,4 +1,4 @@
-import MapGL, {Layer, MapGeoJSONFeature, MapProvider, Source, useMap} from 'react-map-gl/maplibre'
+import MapGL, {Layer, MapGeoJSONFeature, MapProvider, ScaleControl, Source, useMap} from 'react-map-gl/maplibre'
 import {Storm} from './storm'
 import DeckGL from '@deck.gl/react'
 import {ZetaCard} from './zeta.card'
@@ -113,6 +113,7 @@ const ZetaMap = ({layer, type}: ZetaMapProps) => {
         <MapGL id={mapId} reuseMaps mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json">
           {type !== 'tide' && <Storm />}
           <PeakLocation type={type} />
+          <ScaleControl position="bottom-right" />
         </MapGL>
       </DeckGL>
       <InfoCard type={type} />

@@ -1,4 +1,4 @@
-import MapGL, {MapLayerMouseEvent} from 'react-map-gl/maplibre'
+import MapGL, {MapLayerMouseEvent, NavigationControl, ScaleControl} from 'react-map-gl/maplibre'
 import {Grid} from './grid'
 import {Storm} from './storm'
 import {selectedPoint} from '../stores/grid'
@@ -44,6 +44,8 @@ export const GridStormMap = ({coastOnly = false}) => (
   >
     <Grid coastOnly={coastOnly} />
     <Storm />
+    <ScaleControl position="bottom-right" />
+    <NavigationControl />
   </MapGL>
 )
 
