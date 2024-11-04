@@ -1,4 +1,5 @@
 import json
+import os
 from contextlib import suppress
 from datetime import timedelta
 
@@ -10,6 +11,8 @@ from app_types import Grid, GridParams, IncludeFlags, RunParams, Storm
 from consts import STORM_FOLDER
 
 np.seterr(over="raise")
+
+WS_URL = os.getenv("WS_URL", "ws://localhost:8000/ws")
 
 OMEGA = 7.292e-5
 
@@ -100,8 +103,8 @@ class EllipticSurgeModel:
         )
 
     def notify(self, current):
-        with suppress(ConnectionRefusedError):
-            with wsclient.connect("ws://host.docker.internal:8000/ws") as ws:
+        with suppress(ConnectionRefusedError, OSError):
+            with wsclient.connect(WS_URL, open_timeout=1) as ws:
                 ws.send(
                     json.dumps(
                         dict(

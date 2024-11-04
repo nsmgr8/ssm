@@ -32,6 +32,7 @@ export const ProgressBar = ({data, color}: ProgressProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prevValue.current, data])
   if (!data.name) return null
+  const nDigits = Math.ceil(Math.log10(data.total))
   return (
     <>
       <div>{data.name}</div>
@@ -39,7 +40,7 @@ export const ProgressBar = ({data, color}: ProgressProps) => {
         <div style={{width: `${(data.current / data.total) * 100}%`, backgroundColor: color}}>&nbsp;</div>
       </div>
       <div>
-        {data.current}/{data.total}
+        {data.current.toString().padStart(nDigits, '0')}/{data.total}
       </div>
       <div style={{textWrap: 'nowrap'}}>
         {prevValue.current?.remaining ? formatMilliseconds(prevValue.current.remaining) : '--:--:--'}

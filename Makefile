@@ -8,6 +8,10 @@ PIP_INSTALL = $(PIP) install -U --user
 UV = $(BACKEND_RUN) uv
 PNPM = $(FRONTEND_RUN) pnpm
 
+.PHONY: build-containers
+build:
+	$(COMPOSE) build
+
 .PHONY: env
 env:
 	$(UV) sync
@@ -27,6 +31,8 @@ format:
 check:
 	$(UV) tool run ruff check
 	$(PNPM) lint
+	$(PNPM) outdated
+	$(PNPM) audit
 
 .PHONY: shell-backend shell-frontend
 shell-backend shell-frontend: shell-%:

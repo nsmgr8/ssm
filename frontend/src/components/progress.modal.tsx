@@ -1,7 +1,7 @@
 import useWebSocket from 'react-use-websocket'
 import {ProgressBar, ProgressState} from './progress.bar'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {formatMilliseconds} from '../utils/formats'
+import {formatMilliseconds, titleCase} from '../utils/formats'
 import {IntervalType} from '../utils/types'
 
 const STALE_TIME = 30_000
@@ -47,7 +47,7 @@ export const ProgressModal = () => {
   useEffect(() => {
     if (!lastJsonMessage) return
     const message = lastJsonMessage as ProgressState
-    setStorm(message.storm)
+    setStorm(titleCase(message.storm.replace('-', ' ')))
     setLastUpdate(+new Date())
     if (message.name === 'Surge') setSurge(message)
     if (message.name === 'Tide') setTide(message)
