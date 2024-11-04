@@ -15,8 +15,20 @@ export const GridConfigForm = () => (
       <FormInput name="n" value={gridConfig.value.n} min={1} label="Number of columns (n)" />
       <FormInput name="dr" value={gridConfig.value.dr} min={1} label="Radial interval (meters)" />
       <FormInput name="e" value={gridConfig.value.e} max={0.999999} label="Ellipse eccentricity (0 <= e < 1)" />
-      <FormInput name="alpha" value={gridConfig.value.alpha} min={-359.99999} max={359.99999} label="Start angle (degree)" />
-      <FormInput name="beta" value={gridConfig.value.beta} min={-359.99999} max={359.99999} label="Stop angle (degree)" />
+      <FormInput
+        name="alpha"
+        value={gridConfig.value.alpha}
+        min={-359.99999}
+        max={359.99999}
+        label="Start angle (degree)"
+      />
+      <FormInput
+        name="beta"
+        value={gridConfig.value.beta}
+        min={-359.99999}
+        max={359.99999}
+        label="Stop angle (degree)"
+      />
       <FormInput
         name="origin.longitude"
         value={gridConfig.value.origin?.longitude}

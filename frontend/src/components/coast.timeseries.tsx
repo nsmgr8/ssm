@@ -7,8 +7,15 @@ import {formattedLngLat} from '../utils/formats'
 import {EChart} from '@kbox-labs/react-echarts'
 import {ArrayElement} from '../utils/types'
 import {distance} from '@turf/turf'
+import {useEffect, useState} from 'react'
 
+const defaultName = 'PLEASE SET THE LOCATION NAME'
 export const CoastTimeSeries = () => {
+  const [locationName, setLocationName] = useState('')
+  useEffect(() => {
+    setLocationName('')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPoint.value])
   const {row, column} = selectedPoint.value
   const location = formattedLngLat(gridMatrix.value[row]?.[column] || [])
   const sum = chartData.value.both.reduce((acc, [time, value]) => {
@@ -20,108 +27,123 @@ export const CoastTimeSeries = () => {
   }, 0)
   const rmse = observed.value.length > 0 ? `RMSE: ${(sum / observed.value.length).toFixed(4)}` : ''
   return (
-    <div style={{position: 'relative', height: '100%', display: 'flex', alignItems: 'center'}}>
-      <EChart
-        style={{
-          height: '98%',
-          width: '100%',
-        }}
-        title={{
-          text: `${stormName.value}`,
-          subtext: `Location: ${location}
+    <>
+      <div style={{padding: '10px', display: 'flex', gap: 10, justifyContent: 'center', backgroundColor: '#eee'}}>
+        <label htmlFor="id-title">Location Name</label>
+        <input
+          size={50}
+          type="text"
+          value={locationName}
+          onChange={({target: {value}}) => setLocationName(value)}
+          placeholder="Enter location name here..."
+        />
+      </div>
+      <div style={{position: 'relative', height: 'calc(100% - 41px)', display: 'flex', alignItems: 'center'}}>
+        <EChart
+          style={{
+            height: '98%',
+            width: '100%',
+          }}
+          title={{
+            text: `${stormName.value} - ${locationName}`,
+            subtext: locationName
+              ? ''
+              : `${defaultName}
+Location: ${location}
 Grid Point: (${row}, ${column})
 ${rmse}`,
-          left: '50%',
-          textAlign: 'center',
-          itemGap: 5,
-          subtextStyle: {
-            fontSize: 14,
-            fontWeight: 'bold',
-            lineHeight: 18,
-          },
-        }}
-        tooltip={{
-          trigger: 'axis',
-          formatter: (event) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const e = event as any[]
-            currentStormLocation.value = stormLocations.value[e[0].dataIndex]
-            const time = new Date(e[0].data[0]).toLocaleString('en-GB', {dateStyle: 'medium', timeStyle: 'short'})
-            const heading = `<div style='font-weight:bold;border-bottom:1px solid #555'>${time}</div>`
-            const items = e
-              .map((x) => {
-                const color = `<div style='background-color:${x.color};padding:0px 5px'>&nbsp;</div>`
-                const name = `<div>${x.seriesName}</div>`
-                const key = `<div style='display:flex;gap:3px'>${color}${name}</div>`
-                const value = `<div style='font-weight:bold'>${x.data[1].toFixed(3)} m</div>`
-                return `<div style='display:flex;justify-content:space-between;gap:5px;margin:5px 0'>${key}${value}</div>`
-              })
-              .join('')
-            const storm_dist = distance(gridMatrix.value[row][column], currentStormLocation.value)
-            const storm = `<div style='border-top:1px solid #555;padding-top:3px'>
+            left: '50%',
+            textAlign: 'center',
+            itemGap: 5,
+            subtextStyle: {
+              fontSize: 14,
+              fontWeight: 'bold',
+              lineHeight: 18,
+            },
+          }}
+          tooltip={{
+            trigger: 'axis',
+            formatter: (event) => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const e = event as any[]
+              currentStormLocation.value = stormLocations.value[e[0].dataIndex]
+              const time = new Date(e[0].data[0]).toLocaleString('en-GB', {dateStyle: 'medium', timeStyle: 'short'})
+              const heading = `<div style='font-weight:bold;border-bottom:1px solid #555'>${time}</div>`
+              const items = e
+                .map((x) => {
+                  const color = `<div style='background-color:${x.color};padding:0px 5px'>&nbsp;</div>`
+                  const name = `<div>${x.seriesName}</div>`
+                  const key = `<div style='display:flex;gap:3px'>${color}${name}</div>`
+                  const value = `<div style='font-weight:bold'>${x.data[1].toFixed(3)} m</div>`
+                  return `<div style='display:flex;justify-content:space-between;gap:5px;margin:5px 0'>${key}${value}</div>`
+                })
+                .join('')
+              const storm_dist = distance(gridMatrix.value[row][column], currentStormLocation.value)
+              const storm = `<div style='border-top:1px solid #555;padding-top:3px'>
               <div>Storm at <span style='font-weight:bold'>${formattedLngLat(currentStormLocation.value)}</span></div>
               <div>Storm distance: <span style='font-weight:bold'>${storm_dist.toFixed(3)} km</span></div>
             </div>`
-            return [heading, items, storm].join('')
-          },
-        }}
-        toolbox={{
-          feature: {
-            dataZoom: {
-              yAxisIndex: 'none',
+              return [heading, items, storm].join('')
             },
-            dataView: {readOnly: false},
-            saveAsImage: {},
-          },
-        }}
-        legend={{
-          show: true,
-          bottom: 0,
-        }}
-        xAxis={{
-          name: 'Time',
-          nameLocation: 'middle',
-          nameGap: 30,
-          nameTextStyle: {
-            fontWeight: 'bold',
-            fontSize: '16px',
-          },
-          type: 'time',
-          axisLabel: {
-            formatter: {
-              day: '{yyyy}-{MM}-{dd}',
-              hour: '{HH}:{mm}',
+          }}
+          toolbox={{
+            feature: {
+              dataZoom: {
+                yAxisIndex: 'none',
+              },
+              dataView: {readOnly: false},
+              saveAsImage: {},
             },
-          },
-        }}
-        yAxis={{
-          name: 'Sea Level',
-          nameLocation: 'middle',
-          nameGap: 50,
-          nameTextStyle: {
-            fontWeight: 'bold',
-            fontSize: '16px',
-          },
-          type: 'value',
-          max: coastLevelMax.value,
-          min: coastLevelMin.value,
-          axisLabel: {
-            formatter: (value) => `${value.toFixed(2)} m`,
-          },
-        }}
-        series={[
-          seriesConf('both'),
-          seriesConf('surge', [5]),
-          seriesConf('tide', [5, 10, 15]),
-          {
-            name: 'observed',
-            type: 'scatter',
-            data: observed.value,
-          },
-        ]}
-      />
-      <Message />
-    </div>
+          }}
+          legend={{
+            show: true,
+            bottom: 0,
+          }}
+          xAxis={{
+            name: 'Time',
+            nameLocation: 'middle',
+            nameGap: 30,
+            nameTextStyle: {
+              fontWeight: 'bold',
+              fontSize: '16px',
+            },
+            type: 'time',
+            axisLabel: {
+              formatter: {
+                day: '{yyyy}-{MM}-{dd}',
+                hour: '{HH}:{mm}',
+              },
+            },
+          }}
+          yAxis={{
+            name: 'Sea Level',
+            nameLocation: 'middle',
+            nameGap: 50,
+            nameTextStyle: {
+              fontWeight: 'bold',
+              fontSize: '16px',
+            },
+            type: 'value',
+            max: coastLevelMax.value,
+            min: coastLevelMin.value,
+            axisLabel: {
+              formatter: (value) => `${value.toFixed(2)} m`,
+            },
+          }}
+          series={[
+            seriesConf('both'),
+            seriesConf('surge', [5]),
+            seriesConf('tide', [5, 10, 15]),
+            {
+              name: 'observed',
+              type: 'scatter',
+              data: observed.value,
+            },
+          ]}
+        />
+        <Message />
+      </div>
+    </>
   )
 }
 
