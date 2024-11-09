@@ -98,6 +98,9 @@ ${rmse}`,
           legend={{
             show: true,
             bottom: 0,
+            textStyle: {
+              fontSize: '18px',
+            },
           }}
           xAxis={{
             name: 'Time',
@@ -109,6 +112,7 @@ ${rmse}`,
             },
             type: 'time',
             axisLabel: {
+              fontSize: '16px',
               formatter: {
                 day: '{yyyy}-{MM}-{dd}',
                 hour: '{HH}:{mm}',
@@ -118,7 +122,7 @@ ${rmse}`,
           yAxis={{
             name: 'Sea Level',
             nameLocation: 'middle',
-            nameGap: 50,
+            nameGap: 60,
             nameTextStyle: {
               fontWeight: 'bold',
               fontSize: '16px',
@@ -127,14 +131,17 @@ ${rmse}`,
             max: coastLevelMax.value,
             min: coastLevelMin.value,
             axisLabel: {
+              fontSize: '16px',
               formatter: (value) => `${value.toFixed(2)} m`,
+              showMinLabel: false,
+              showMaxLabel: false,
             },
           }}
           series={[
             seriesConf('both'),
             seriesConf('surge', [5]),
             seriesConf('tide', [5, 10, 15]),
-            {
+            observed.value.length > 0 && {
               name: 'observed',
               type: 'scatter',
               data: observed.value,
