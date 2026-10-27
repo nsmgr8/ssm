@@ -20,6 +20,7 @@ import {fitToGrid} from '../hooks/grid.fit'
 import {showCard} from '../stores'
 import {availableBands, colorBands} from '../utils/colors'
 import {ColorBands} from './contour.bands'
+import {runParams, RunParams} from './run.params'
 
 export const ZetaCard = () => {
   return (
@@ -32,6 +33,7 @@ export const ZetaCard = () => {
             <ZetaBands />
           </div>
         )}
+        <RunParams />
       </Card>
     )
   )
@@ -149,6 +151,7 @@ type ZetaRaw = {
     data: [number, number, number][]
   }[]
   grid_params: GridConfig
+  run_params: any
   grid: GridPoint[][]
   storm: StormData
   store_dt: number
@@ -162,6 +165,7 @@ const loadZeta = loadFile({
     const {surge, tide, ...data} = JSON.parse(e.target?.result as string) as ZetaRaw
     const key = surge && tide ? 'both' : surge ? 'surge' : tide ? 'tide' : null
     if (!key) return
+    runParams.value = {...data.grid_params, ...data.run_params}
     let [minVal, maxVal] = [zetaMin.value, zetaMax.value]
     data.zetas.forEach(({data: d}, index) =>
       d.forEach((v) => {

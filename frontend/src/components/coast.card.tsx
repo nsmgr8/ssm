@@ -8,6 +8,7 @@ import {fitToGrid} from '../hooks/grid.fit'
 import {showCard} from '../stores'
 import {ports} from '../assets/ports.json'
 import {setSelectedStation} from '../stores/stations'
+import {runParams, RunParams} from './run.params'
 
 export const CoastsCard = () => {
   return (
@@ -25,27 +26,35 @@ export const CoastsCard = () => {
             </button>
           </>
         )}
-        <div style={{display: 'flex', gap: '5px'}}>
-          <label htmlFor="observation-port">Observation Station</label>
-          <select id="observation-port" name="port" onChange={(e) => setSelectedStation(+e.target.value)}>
-            <option value="">--Please choose an observation port--</option>
-            {ports.map((p, i) => (
-              <option key={i} value={i}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <hr />
+        <RunParams />
+        <hr />
+        <SelectPort />
       </Card>
     )
   )
 }
+
+const SelectPort = () => (
+  <div style={{display: 'flex', gap: '5px'}}>
+    <label htmlFor="observation-port">Observation Station</label>
+    <select id="observation-port" name="port" onChange={(e) => setSelectedStation(+e.target.value)}>
+      <option value="">--Please choose an observation port--</option>
+      {ports.map((p, i) => (
+        <option key={i} value={i}>
+          {p.name}
+        </option>
+      ))}
+    </select>
+  </div>
+)
 
 const loadCoasts = loadFile({
   async onLoad(e: ProgressEvent<FileReader>, fileIndex: number) {
     const {surge, tide, ...data} = JSON.parse(e.target?.result as string)
     const key = surge && tide ? 'both' : surge ? 'surge' : tide ? 'tide' : ''
     if (key === '') return
+    runParams.value = {...data.grid_params, ...data.run_params}
     if (fileIndex === 0) {
       await setupGrid(data.grid_params, data.grid)
       stormData.value = data.storm

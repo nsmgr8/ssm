@@ -14,3 +14,11 @@ body {
   height: 100%;
   width: 100%;
 }
+
+table.run-params th {
+  text-align: left;
+  font-weight: normal;
+}
+table.run-params td {
+  text-align: right;
+}
