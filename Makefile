@@ -9,7 +9,7 @@ PNPM = $(FRONTEND_RUN) pnpm
 .PHONY: env
 env:
 	$(UV) sync
-	$(PNPM) update
+	$(PNPM) install
 
 .PHONY: up
 up: env
@@ -31,3 +31,8 @@ check:
 .PHONY: shell-backend shell-frontend
 shell-backend shell-frontend: shell-%:
 	$(COMPOSE_RUN) $* bash
+
+.PHONY: update
+update:
+	$(UV) sync --upgrade
+	$(PNPM) update

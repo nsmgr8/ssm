@@ -8,46 +8,56 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as CoastRouteImport } from './routes/coast'
+import { Route as ZetaRouteImport } from './routes/zeta'
 
-// Import Routes
-
-import { Route as rootRoute } from './routes/__root'
-import { Route as ZetaImport } from './routes/zeta'
-import { Route as CoastImport } from './routes/coast'
-import { Route as IndexImport } from './routes/index'
-
-// Create Virtual Routes
-
-const TestLazyImport = createFileRoute('/test')()
-
-// Create/Update Routes
-
-const TestLazyRoute = TestLazyImport.update({
-  id: '/test',
-  path: '/test',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/test.lazy').then((d) => d.Route))
-
-const ZetaRoute = ZetaImport.update({
-  id: '/zeta',
-  path: '/zeta',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const CoastRoute = CoastImport.update({
-  id: '/coast',
-  path: '/coast',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const IndexRoute = IndexImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoastRoute = CoastRouteImport.update({
+  id: '/coast',
+  path: '/coast',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ZetaRoute = ZetaRouteImport.update({
+  id: '/zeta',
+  path: '/zeta',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
-// Populate the FileRoutesByPath interface
+export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
+  '/coast': typeof CoastRoute
+  '/zeta': typeof ZetaRoute
+}
+export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '/coast': typeof CoastRoute
+  '/zeta': typeof ZetaRoute
+}
+export interface FileRoutesById {
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/coast': typeof CoastRoute
+  '/zeta': typeof ZetaRoute
+}
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths: '/' | '/coast' | '/zeta'
+  fileRoutesByTo: FileRoutesByTo
+  to: '/' | '/coast' | '/zeta'
+  id: '__root__' | '/' | '/coast' | '/zeta'
+  fileRoutesById: FileRoutesById
+}
+export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
+  CoastRoute: typeof CoastRoute
+  ZetaRoute: typeof ZetaRoute
+}
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
@@ -55,108 +65,31 @@ declare module '@tanstack/react-router' {
       id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/coast': {
       id: '/coast'
       path: '/coast'
       fullPath: '/coast'
-      preLoaderRoute: typeof CoastImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof CoastRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/zeta': {
       id: '/zeta'
       path: '/zeta'
       fullPath: '/zeta'
-      preLoaderRoute: typeof ZetaImport
-      parentRoute: typeof rootRoute
-    }
-    '/test': {
-      id: '/test'
-      path: '/test'
-      fullPath: '/test'
-      preLoaderRoute: typeof TestLazyImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof ZetaRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
-}
-
-// Create and export the route tree
-
-export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/coast': typeof CoastRoute
-  '/zeta': typeof ZetaRoute
-  '/test': typeof TestLazyRoute
-}
-
-export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/coast': typeof CoastRoute
-  '/zeta': typeof ZetaRoute
-  '/test': typeof TestLazyRoute
-}
-
-export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/': typeof IndexRoute
-  '/coast': typeof CoastRoute
-  '/zeta': typeof ZetaRoute
-  '/test': typeof TestLazyRoute
-}
-
-export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/coast' | '/zeta' | '/test'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/coast' | '/zeta' | '/test'
-  id: '__root__' | '/' | '/coast' | '/zeta' | '/test'
-  fileRoutesById: FileRoutesById
-}
-
-export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  CoastRoute: typeof CoastRoute
-  ZetaRoute: typeof ZetaRoute
-  TestLazyRoute: typeof TestLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CoastRoute: CoastRoute,
   ZetaRoute: ZetaRoute,
-  TestLazyRoute: TestLazyRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/",
-        "/coast",
-        "/zeta",
-        "/test"
-      ]
-    },
-    "/": {
-      "filePath": "index.tsx"
-    },
-    "/coast": {
-      "filePath": "coast.tsx"
-    },
-    "/zeta": {
-      "filePath": "zeta.tsx"
-    },
-    "/test": {
-      "filePath": "test.lazy.tsx"
-    }
-  }
-}
-ROUTE_MANIFEST_END */
