@@ -1,0 +1,82 @@
+{
+  "name": "aila-2009",
+  "max_wind_speed": 34,
+  "max_radius": 50,
+  "track": [
+    {
+      "time": "2009-05-23T06:00",
+      "latitude": 16.0,
+      "longitude": 80.0
+    },
+    {
+      "time": "2009-05-23T12:00",
+      "latitude": 16.5,
+      "longitude": 80.0
+    },
+    {
+      "time": "2009-05-23T18:00",
+      "latitude": 16.7,
+      "longitude": 80.0
+    },
+    {
+      "time": "2009-05-24T00:00",
+      "latitude": 17.2,
+      "longitude": 88.3
+    },
+    {
+      "time": "2009-05-24T06:00",
+      "latitude": 18.4,
+      "longitude": 88.6
+    },
+    {
+      "time": "2009-05-24T12:00",
+      "latitude": 18.6,
+      "longitude": 88.6
+    },
+    {
+      "time": "2009-05-24T18:00",
+      "latitude": 18.8,
+      "longitude": 88.6
+    },
+    {
+      "time": "2009-05-25T00:00",
+      "latitude": 19.4,
+      "longitude": 88.6
+    },
+    {
+      "time": "2009-05-25T06:00",
+      "latitude": 21.6,
+      "longitude": 88.3
+    },
+    {
+      "time": "2009-05-25T12:00",
+      "latitude": 22.9,
+      "longitude": 88.3
+    },
+    {
+      "time": "2009-05-25T18:00",
+      "latitude": 24.2,
+      "longitude": 88.5
+    },
+    {
+      "time": "2009-05-26T00:00",
+      "latitude": 24.2,
+      "longitude": 88.5
+    },
+    {
+      "time": "2009-05-26T06:00",
+      "latitude": 24.2,
+      "longitude": 88.5
+    },
+    {
+      "time": "2009-05-26T12:00",
+      "latitude": 27.1,
+      "longitude": 89.2
+    },
+    {
+      "time": "2009-05-26T18:00",
+      "latitude": 27.1,
+      "longitude": 89.2
+    }
+  ]
+}

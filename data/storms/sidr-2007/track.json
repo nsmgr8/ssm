@@ -1,0 +1,24 @@
+{
+  "name": "sidr-2007",
+  "max_wind_speed": 72,
+  "max_radius": 50,
+  "track": [
+    {"time": "2007-11-12T00:00", "latitude": 10.4, "longitude": 90.8},
+    {"time": "2007-11-12T06:00", "latitude": 10.8, "longitude": 90.4},
+    {"time": "2007-11-12T12:00", "latitude": 11.0, "longitude": 90.3},
+    {"time": "2007-11-12T18:00", "latitude": 11.6, "longitude": 90.0},
+    {"time": "2007-11-13T00:00", "latitude": 12.1, "longitude": 89.9},
+    {"time": "2007-11-13T06:00", "latitude": 12.5, "longitude": 89.8},
+    {"time": "2007-11-13T12:00", "latitude": 13.0, "longitude": 89.6},
+    {"time": "2007-11-13T18:00", "latitude": 13.7, "longitude": 89.5},
+    {"time": "2007-11-14T00:00", "latitude": 14.3, "longitude": 89.6},
+    {"time": "2007-11-14T06:00", "latitude": 15.0, "longitude": 89.4},
+    {"time": "2007-11-14T12:00", "latitude": 15.7, "longitude": 89.3},
+    {"time": "2007-11-14T18:00", "latitude": 16.6, "longitude": 89.3},
+    {"time": "2007-11-15T00:00", "latitude": 17.8, "longitude": 89.2},
+    {"time": "2007-11-15T06:00", "latitude": 19.3, "longitude": 89.3},
+    {"time": "2007-11-15T12:00", "latitude": 20.9, "longitude": 89.5},
+    {"time": "2007-11-15T18:00", "latitude": 22.8, "longitude": 90.3},
+    {"time": "2007-11-16T00:00", "latitude": 25.0, "longitude": 91.9}
+  ]
+}
