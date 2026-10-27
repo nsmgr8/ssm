@@ -26,10 +26,7 @@ export const availableBands = {} as Record<string, Interpolate>
 
 const colorStr2Num = (s: string) => {
   if (s.startsWith('rgb')) {
-    return s
-      .replace(/(rgb.)|([^\d]*$)/g, '')
-      .split(',')
-      .map((x) => +x)
+    return s.split(',').map((x) => +x.replace(/[^\d]/g, ''))
   }
   if (s.startsWith('#')) {
     return [s.slice(1, 3), s.slice(3, 5), s.slice(5)].map((x) => +`0x${x}`)

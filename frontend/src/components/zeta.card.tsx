@@ -22,6 +22,59 @@ import {availableBands, colorBands} from '../utils/colors'
 import {ColorBands} from './contour.bands'
 
 export const ZetaCard = () => {
+  return (
+    showCard.value && (
+      <Card>
+        <LoadFile id="zeta-file" label="Load zeta files" onChange={loadZeta} multiple />
+        {zetas.value.both.length > 0 && (
+          <div>
+            <ZetaButtons />
+            <ZetaBands />
+          </div>
+        )}
+      </Card>
+    )
+  )
+}
+
+const ZetaBands = () => {
+  return (
+    <div>
+      <div style={{display: 'flex', justifyContent: 'space-between', gap: 10}}>
+        <label htmlFor="id-num-bands">Bands ({numBands.value})</label>
+        <input
+          style={{flexGrow: 1}}
+          type="range"
+          defaultValue={numBands.value}
+          min={10}
+          max={40}
+          step={1}
+          onChange={({target: {value}}) => (numBands.value = +value)}
+        />
+      </div>
+      <div style={{height: '100px', overflow: 'scroll'}}>
+        {Object.entries(availableBands).map(([name, f]) => (
+          <label key={name} htmlFor={`id-color-radio-${name}`}>
+            <div style={{display: 'flex', margin: '3px 0'}}>
+              <input
+                type="radio"
+                name="_"
+                id={`id-color-radio-${name}`}
+                onClick={() => (currentBandColor.value = name)}
+                defaultChecked={currentBandColor.value === name}
+              />
+              <div style={{flexGrow: 1}}>
+                <ColorBands bands={colorBands(f)} />
+              </div>
+            </div>
+          </label>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+const ZetaButtons = () => {
   const [playId, setPlayId] = useState<IntervalType>()
 
   useEffect(() => () => clearInterval(playId), [playId])
@@ -43,64 +96,36 @@ export const ZetaCard = () => {
   }, [pause])
 
   return (
-    showCard.value && (
-      <Card>
-        <LoadFile id="zeta-file" label="Load zeta files" onChange={loadZeta} multiple />
-        {zetas.value.both.length > 0 && (
-          <div>
-            <div style={{display: 'flex', gap: 5, marginBottom: '5px'}}>
-              <button type="button" onClick={nextZeta(-1)}>
-                Previous
-              </button>
-              <button type="button" onClick={nextZeta(1)}>
-                Next
-              </button>
-              <button type="button" onClick={play}>
-                Play
-              </button>
-              <button type="button" onClick={pause}>
-                Pause
-              </button>
-              <button type="button" onClick={clear}>
-                Clear
-              </button>
-              <button type="button" onClick={fitToGrid}>
-                Fit map
-              </button>
-            </div>
-            <div style={{display: 'flex', justifyContent: 'space-between', gap: 10}}>
-              <label htmlFor="id-num-bands">Bands ({numBands.value})</label>
-              <input
-                style={{flexGrow: 1}}
-                type="range"
-                defaultValue={numBands.value}
-                min={10}
-                max={40}
-                step={1}
-                onChange={({target: {value}}) => (numBands.value = +value)}
-              />
-            </div>
-            <div style={{height: '100px', overflow: 'scroll'}}>
-              {Object.entries(availableBands).map(([name, f]) => (
-                <label key={name} htmlFor={`id-color-radio-${name}`}>
-                  <div style={{display: 'flex', margin: '3px 0'}}>
-                    <input
-                      type="radio"
-                      name="_"
-                      id={`id-color-radio-${name}`}
-                      onClick={() => (currentBandColor.value = name)}
-                    />
-                    <div style={{flexGrow: 1}}>
-                      <ColorBands bands={colorBands(f)} />
-                    </div>
-                  </div>
-                </label>
-              ))}
-            </div>
-          </div>
-        )}
-      </Card>
-    )
+    <div style={{display: 'flex', gap: 5, marginBottom: '5px'}}>
+      <button type="button" title="Minimum Sea Level" onClick={() => (currentZetaIdx.value = zetaMin.value.index)}>
+        &darr;
+      </button>
+      <button type="button" title="Maximum Sea Level" onClick={() => (currentZetaIdx.value = zetaMax.value.index)}>
+        &uarr;
+      </button>
+      {!playId && (
+        <button type="button" title="Play" onClick={play}>
+          &#x23F5;
+        </button>
+      )}
+      {playId && (
+        <button type="button" title="Pause" onClick={pause}>
+          &#x23F8;
+        </button>
+      )}
+      <button type="button" title="Previous" onClick={nextZeta(-1)}>
+        &larr;
+      </button>
+      <button type="button" title="Next" onClick={nextZeta(1)}>
+        &rarr;
+      </button>
+      <button type="button" title="Reset" onClick={clear}>
+        &#x1F5D1;
+      </button>
+      <button type="button" title="Fit map" onClick={fitToGrid}>
+        &#x26F6;
+      </button>
+    </div>
   )
 }
 
@@ -138,10 +163,10 @@ const loadZeta = loadFile({
     const key = surge && tide ? 'both' : surge ? 'surge' : tide ? 'tide' : null
     if (!key) return
     let [minVal, maxVal] = [zetaMin.value, zetaMax.value]
-    data.zetas.forEach(({data: d}) =>
+    data.zetas.forEach(({data: d}, index) =>
       d.forEach((v) => {
-        if (v[2] < minVal) minVal = v[2]
-        if (v[2] > maxVal) maxVal = v[2]
+        if (v[2] < minVal.value) minVal = {value: v[2], index}
+        if (v[2] > maxVal.value) maxVal = {value: v[2], index}
       })
     )
     if (idx === 0) {

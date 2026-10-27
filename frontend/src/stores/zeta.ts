@@ -22,8 +22,8 @@ const initialZeta = {both: [], surge: [], tide: []}
 
 export const resetZeta = () => {
   zetas.value = initialZeta
-  zetaMin.value = 10000
-  zetaMax.value = -10000
+  zetaMin.value = {value: 10000, index: -1}
+  zetaMax.value = {value: -10000, index: -1}
   zetaDt.value = 0
   currentZetaIdx.value = 0
   stormStartedAt.value = 0
@@ -34,8 +34,8 @@ export const resetZeta = () => {
 
 export const zetas = signal<Zetas>(initialZeta)
 export const currentZetaIdx = signal(0)
-export const zetaMin = signal(0)
-export const zetaMax = signal(0)
+export const zetaMin = signal({value: 10000, index: -1})
+export const zetaMax = signal({value: -10000, index: -1})
 export const zetaDt = signal(0)
 export const numBands = signal(10)
 
@@ -58,7 +58,7 @@ export const zetaLayer = computed(() => {
         data,
         id: 'zeta-contour',
         getPosition: (d) => gridMatrix.value[d[0]][d[1]],
-        getWeight: (d) => d[2] - zetaMin.value,
+        getWeight: (d) => d[2] - zetaMin.value.value,
         pickable: true,
         aggregation: 'MEAN',
         contours: contourBands.value,
@@ -88,9 +88,7 @@ export const peak = computed(() => {
   return result
 })
 
-export const peakBand = signal(-1)
-
 export const contourBands = computed(() =>
-  colorBands(availableBands[currentBandColor.value], zetaMin.value, zetaMax.value)
+  colorBands(availableBands[currentBandColor.value], zetaMin.value.value, zetaMax.value.value)
 )
 export const currentBandColor = signal('Turbo')

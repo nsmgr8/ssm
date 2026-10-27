@@ -35,15 +35,10 @@ export const ColorBands = ({bands, showTitle = false}: ColorBandsProps) => (
   </div>
 )
 
-const bandVal = (v: number) => (v + zetaMin.value).toFixed(2) + ' m'
+const bandVal = (v: number) => (v + zetaMin.value.value).toFixed(2) + ' m'
 
 const zetaBands = computed(() => {
-  const diff = zetaMax.value - zetaMin.value
-  return [
-    zetaMin.value,
-    zetaMin.value + diff / 4,
-    zetaMin.value + diff / 2,
-    zetaMin.value + (diff / 4) * 3,
-    zetaMax.value,
-  ]
+  const minValue = zetaMin.value.value
+  const diff = zetaMax.value.value - minValue
+  return [minValue, minValue + diff / 4, minValue + diff / 2, minValue + (diff / 4) * 3, zetaMax.value.value]
 })

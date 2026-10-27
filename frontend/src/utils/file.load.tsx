@@ -14,7 +14,6 @@ export const loadFile =
 
     const readFile = (idx: number) => {
       if (idx >= files.length) {
-        target.value = ''
         return
       }
       const reader = new FileReader()

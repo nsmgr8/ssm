@@ -12,4 +12,9 @@ export default defineConfig({
     }),
     TanStackRouterVite(),
   ],
+  resolve: {
+    alias: {
+      'mapbox-gl': 'maplibre-gl',
+    },
+  },
 })

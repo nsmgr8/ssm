@@ -2,6 +2,7 @@ import {Link} from '@tanstack/react-router'
 import {Card} from './card'
 import {hoverLocation, showCard} from '../stores'
 import {formattedLngLat} from '../utils/formats'
+import {stationName} from '../stores/stations'
 
 export const NavCard = () => (
   <Card style={{padding: '5px 10px', bottom: 10, top: '', display: 'flex', gap: '10px', borderRadius: '20px'}}>
@@ -11,7 +12,8 @@ export const NavCard = () => (
         <Link to="/">Grid</Link>
         <Link to="/coast">Coast timeseries</Link>
         <Link to="/zeta">Contour</Link>
-        {formattedLngLat(hoverLocation.value || [])}
+        <span>{formattedLngLat(hoverLocation.value || [])}</span>
+        <span style={{color: 'green'}}>{stationName.value}</span>
       </>
     )}
   </Card>

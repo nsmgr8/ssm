@@ -6,12 +6,14 @@ import {RunType, runTypes} from '../stores/zeta'
 import {formattedLngLat} from '../utils/formats'
 import {EChart} from '@kbox-labs/react-echarts'
 import {ArrayElement} from '../utils/types'
-import {distance} from '@turf/turf'
+import {distance, nearestPoint, point} from '@turf/turf'
 import {useEffect, useState} from 'react'
+import {nearestStation, stationsGeoJSON} from '../stores/stations'
 
 const defaultName = 'PLEASE SET THE LOCATION NAME'
 export const CoastTimeSeries = () => {
   const [locationName, setLocationName] = useState('')
+  const station = nearestStation.value
   useEffect(() => {
     setLocationName('')
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -26,6 +28,14 @@ export const CoastTimeSeries = () => {
     return acc
   }, 0)
   const rmse = observed.value.length > 0 ? `RMSE: ${(sum / observed.value.length).toFixed(4)}` : ''
+  const series = [seriesConf('both'), seriesConf('surge', [5]), seriesConf('tide', [5, 10, 15])]
+  if (observed.value.length > 0) {
+    series.push({
+      name: 'observed',
+      type: 'scatter',
+      data: observed.value,
+    })
+  }
   return (
     <>
       <div style={{padding: '10px', display: 'flex', gap: 10, justifyContent: 'center', backgroundColor: '#eee'}}>
@@ -49,8 +59,8 @@ export const CoastTimeSeries = () => {
             subtext: locationName
               ? ''
               : `${defaultName}
-Location: ${location}
-Grid Point: (${row}, ${column})
+Grid Point: (${row}, ${column}) (${location})
+Nearest Station: ${station.properties?.name} (${formattedLngLat(station.geometry?.coordinates || [])})
 ${rmse}`,
             left: '50%',
             textAlign: 'center',
@@ -87,6 +97,7 @@ ${rmse}`,
             },
           }}
           toolbox={{
+            bottom: 0,
             feature: {
               dataZoom: {
                 yAxisIndex: 'none',
@@ -97,10 +108,14 @@ ${rmse}`,
           }}
           legend={{
             show: true,
-            bottom: 0,
+            top: 0,
+            right: 30,
             textStyle: {
               fontSize: '18px',
             },
+          }}
+          grid={{
+            right: 30,
           }}
           xAxis={{
             name: 'Time',
@@ -111,8 +126,13 @@ ${rmse}`,
               fontSize: '16px',
             },
             type: 'time',
+            axisLine: {
+              show: true,
+            },
+            splitArea: {show: true},
             axisLabel: {
               fontSize: '16px',
+              fontWeight: 'bold',
               formatter: {
                 day: '{yyyy}-{MM}-{dd}',
                 hour: '{HH}:{mm}',
@@ -128,25 +148,20 @@ ${rmse}`,
               fontSize: '16px',
             },
             type: 'value',
-            max: coastLevelMax.value,
-            min: coastLevelMin.value,
+            // max: coastLevelMax.value,
+            // min: coastLevelMin.value,
+            axisLine: {
+              show: true,
+            },
             axisLabel: {
               fontSize: '16px',
+              fontWeight: 'bold',
               formatter: (value) => `${value.toFixed(2)} m`,
               showMinLabel: false,
               showMaxLabel: false,
             },
           }}
-          series={[
-            seriesConf('both'),
-            seriesConf('surge', [5]),
-            seriesConf('tide', [5, 10, 15]),
-            observed.value.length > 0 && {
-              name: 'observed',
-              type: 'scatter',
-              data: observed.value,
-            },
-          ]}
+          series={series}
         />
         <Message />
       </div>

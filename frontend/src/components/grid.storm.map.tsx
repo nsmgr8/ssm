@@ -3,6 +3,8 @@ import {Grid} from './grid'
 import {Storm} from './storm'
 import {selectedPoint} from '../stores/grid'
 import {hoverLocation} from '../stores'
+import {Stations} from './stations'
+import {stationName} from '../stores/stations'
 
 const cartostyle = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
 const osmstyle = {
@@ -37,13 +39,14 @@ export const GridStormMap = ({coastOnly = false}) => (
       zoom: 1,
     }}
     mapStyle={style}
-    interactiveLayerIds={['sea', 'coast', 'land']}
+    interactiveLayerIds={['sea', 'coast', 'land', 'station']}
     onMouseMove={onHover}
     onClick={selectPoint}
     keyboard={false}
   >
     <Grid coastOnly={coastOnly} />
     <Storm />
+    <Stations />
     <ScaleControl position="bottom-right" />
     <NavigationControl />
   </MapGL>
@@ -53,14 +56,18 @@ const onHover = ({lngLat: {lng, lat}, features, target}: MapLayerMouseEvent) => 
   hoverLocation.value = [lng, lat]
   if (features?.length === 1) {
     target.getCanvasContainer().style.cursor = 'pointer'
+    stationName.value = features[0].properties.name
   } else {
     target.getCanvasContainer().style.cursor = 'grab'
+    stationName.value = ''
   }
 }
 
 const selectPoint = ({features}: MapLayerMouseEvent) => {
   if (features?.length === 1) {
-    const {row, column} = features[0].properties
-    selectedPoint.value = {row, column}
+    if (features[0].source === 'map-grid-points') {
+      const {row, column} = features[0].properties
+      selectedPoint.value = {row, column}
+    }
   }
 }

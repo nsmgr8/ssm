@@ -136,7 +136,7 @@ const getTooltip = (info: PickingInfo) => {
     return null
   }
   const {threshold} = info.object.contour
-  const [minVal, maxVal] = threshold.map((x: number) => x + zetaMin.value)
+  const [minVal, maxVal] = threshold.map((x: number) => x + zetaMin.value.value)
   const coord = info.coordinate as unknown as [number, number]
   return {
     html: `

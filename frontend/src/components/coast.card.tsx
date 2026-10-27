@@ -6,6 +6,8 @@ import {stormData, stormLocations} from '../stores/storm'
 import {coastLevelMax, coastLevelMin, Coasts, coasts, observed, resetCoasts} from '../stores/coast'
 import {fitToGrid} from '../hooks/grid.fit'
 import {showCard} from '../stores'
+import {ports} from '../assets/ports.json'
+import {setSelectedStation} from '../stores/stations'
 
 export const CoastsCard = () => {
   return (
@@ -23,6 +25,17 @@ export const CoastsCard = () => {
             </button>
           </>
         )}
+        <div style={{display: 'flex', gap: '5px'}}>
+          <label htmlFor="observation-port">Observation Station</label>
+          <select id="observation-port" name="port" onChange={(e) => setSelectedStation(+e.target.value)}>
+            <option value="">--Please choose an observation port--</option>
+            {ports.map((p, i) => (
+              <option key={i} value={i}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        </div>
       </Card>
     )
   )
@@ -80,7 +93,7 @@ const loadObserved = loadFile({
     }
     observed.value = values.map((x) => {
       findMinMax(x.sea_level)
-      return [x.timestamp * 1000, x.sea_level]
+      return [x.timestamp * 1000, +x.sea_level]
     })
     coastLevelMin.value = dMin
     coastLevelMax.value = dMax

@@ -103,19 +103,18 @@ class EllipticSurgeModel:
         )
 
     def notify(self, current):
-        with suppress(ConnectionRefusedError, OSError):
-            with wsclient.connect(WS_URL, open_timeout=1) as ws:
-                ws.send(
-                    json.dumps(
-                        dict(
-                            name=self.name,
-                            current=current,
-                            total=self.n_steps,
-                            storm=self.storm.name,
-                            state="complete" if current == self.n_steps else "running",
-                        )
-                    )
+        with suppress(ConnectionRefusedError, OSError), wsclient.connect(WS_URL, open_timeout=1) as ws:
+            ws.send(
+                json.dumps(
+                    {
+                        "name": self.name,
+                        "current": current,
+                        "total": self.n_steps,
+                        "storm": self.storm.name,
+                        "state": "complete" if current == self.n_steps else "running",
+                    }
                 )
+            )
 
     def save_output(self, include, storm_locations):
         output_name_parts = ["{name}", "json"]
