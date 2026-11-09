@@ -2,7 +2,7 @@ import {useEffect, useRef} from 'react'
 import {formatMilliseconds} from '../utils/formats'
 
 export type ProgressState = {
-  name: 'Both' | 'Surge' | 'Tide'
+  name: 'Both' | 'Surge' | 'Tide' | 'None'
   storm: string
   current: number
   total: number
@@ -30,7 +30,7 @@ export const ProgressBar = ({data, color}: ProgressProps) => {
     const remaining = ((data.total - data.current) * timeDiff) / iterDiff
     prevValue.current = {elapsed: now, iteration: data.current, remaining}
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [prevValue.current, data])
+  }, [data])
   if (!data.name) return null
   const nDigits = Math.ceil(Math.log10(data.total))
   return (

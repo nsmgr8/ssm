@@ -52,8 +52,7 @@ const SelectPort = () => (
 const loadCoasts = loadFile({
   async onLoad(e: ProgressEvent<FileReader>, fileIndex: number) {
     const {surge, tide, ...data} = JSON.parse(e.target?.result as string)
-    const key = surge && tide ? 'both' : surge ? 'surge' : tide ? 'tide' : ''
-    if (key === '') return
+    const key = surge && tide ? 'both' : surge ? 'surge' : tide ? 'tide' : 'none'
     runParams.value = {...data.grid_params, ...data.run_params}
     if (fileIndex === 0) {
       await setupGrid(data.grid_params, data.grid)
@@ -73,7 +72,7 @@ const loadCoasts = loadFile({
         coasts_data[row] = {}
       }
       if (coasts_data[row][column] === undefined) {
-        coasts_data[row][column] = {both: [], surge: [], tide: []}
+        coasts_data[row][column] = {both: [], surge: [], tide: [], none: []}
       }
 
       coasts_data[row][column][key] = values.map((v, i) => {

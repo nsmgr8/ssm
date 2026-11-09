@@ -39,6 +39,7 @@ class RunParams(BaseModel):
     store_dt: Minute2Second
     tide_amplitude: float
     tide_phase: Degree2Radian
+    zeta0: float
 
 
 class GridConfig(BaseModel):

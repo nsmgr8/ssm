@@ -5,6 +5,14 @@ import {formatMilliseconds, titleCase} from '../utils/formats'
 import {IntervalType} from '../utils/types'
 
 const STALE_TIME = 30_000
+type RunState = Record<ProgressState['name'], ProgressState>
+const BarColors: Record<ProgressState['name'], string> = {
+  Both: 'green',
+  Surge: 'red',
+  Tide: 'blue',
+  None: 'black',
+}
+const RunTypes = Object.keys(BarColors) as Array<keyof typeof BarColors>
 
 export const ProgressModal = () => {
   const {lastJsonMessage} = useWebSocket('ws://localhost:8000/ws', {
@@ -22,13 +30,8 @@ export const ProgressModal = () => {
 
   const [storm, setStorm] = useState('')
 
-  const [both, setBoth] = useState({} as ProgressState)
-  const [surge, setSurge] = useState({} as ProgressState)
-  const [tide, setTide] = useState({} as ProgressState)
-  const showModal = useMemo(
-    () => both.state === 'running' || surge.state === 'running' || tide.state === 'running',
-    [both, surge, tide]
-  )
+  const [runState, setRunState] = useState({} as RunState)
+  const showModal = useMemo(() => Object.values(runState).filter((x) => x.state === 'running').length > 0, [runState])
 
   useEffect(() => {
     if (!showModal) {
@@ -37,9 +40,7 @@ export const ProgressModal = () => {
   }, [showModal])
 
   const reset = useCallback(() => {
-    setBoth({} as ProgressState)
-    setTide({} as ProgressState)
-    setSurge({} as ProgressState)
+    setRunState({} as RunState)
     clearInterval(elapsedId)
     clearInterval(staleId)
   }, [staleId, elapsedId])
@@ -49,9 +50,7 @@ export const ProgressModal = () => {
     const message = lastJsonMessage as ProgressState
     setStorm(titleCase(message.storm.replace('-', ' ')))
     setLastUpdate(+new Date())
-    if (message.name === 'Surge') setSurge(message)
-    if (message.name === 'Tide') setTide(message)
-    if (message.name === 'Both') setBoth(message)
+    setRunState((state) => ({...state, [message.name]: message}))
   }, [lastJsonMessage])
 
   useEffect(() => {
@@ -120,9 +119,7 @@ export const ProgressModal = () => {
             fontFamily: 'monospace',
           }}
         >
-          <ProgressBar data={both} color="green" />
-          <ProgressBar data={surge} color="red" />
-          <ProgressBar data={tide} color="blue" />
+          {RunTypes.map((k) => runState[k]?.name && <ProgressBar data={runState[k]} color={BarColors[k]} />)}
         </div>
         {stale > STALE_TIME && <StaleWarning reset={reset} stale={stale} />}
       </div>

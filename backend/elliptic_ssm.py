@@ -122,6 +122,8 @@ class EllipticSurgeModel:
             output_name_parts.insert(1, "tide")
         if include.surge:
             output_name_parts.insert(1, "surge")
+        if len(output_name_parts) == 2:
+            output_name_parts.insert(1, "none")
         output_name = ".".join(output_name_parts)
 
         def output_filename(name: str):
@@ -219,7 +221,7 @@ class EllipticSurgeModel:
         self.v_trans = np.zeros((self.m, self.n))
 
         # elevation
-        self.zeta1 = np.zeros((self.m, self.n))
+        self.zeta1 = np.full((self.m, self.n), self.run_params.zeta0)
         self.zeta2 = np.zeros((self.m, self.n))
 
         # wind stress

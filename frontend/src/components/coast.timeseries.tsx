@@ -6,9 +6,9 @@ import {RunType, runTypes} from '../stores/zeta'
 import {formattedLngLat} from '../utils/formats'
 import {EChart} from '@kbox-labs/react-echarts'
 import {ArrayElement} from '../utils/types'
-import {distance, nearestPoint, point} from '@turf/turf'
+import {distance} from '@turf/turf'
 import {useEffect, useState} from 'react'
-import {nearestStation, stationsGeoJSON} from '../stores/stations'
+import {nearestStation} from '../stores/stations'
 
 const defaultName = 'PLEASE SET THE LOCATION NAME'
 export const CoastTimeSeries = () => {
@@ -28,7 +28,7 @@ export const CoastTimeSeries = () => {
     return acc
   }, 0)
   const rmse = observed.value.length > 0 ? `RMSE: ${(sum / observed.value.length).toFixed(4)}` : ''
-  const series = [seriesConf('both'), seriesConf('surge', [5]), seriesConf('tide', [5, 10, 15])]
+  const series = [seriesConf('both'), seriesConf('surge', [5]), seriesConf('tide', [5, 10, 15]), seriesConf('none')]
   if (observed.value.length > 0) {
     series.push({
       name: 'observed',

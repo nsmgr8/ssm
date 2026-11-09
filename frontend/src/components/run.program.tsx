@@ -9,6 +9,7 @@ const runParams = [
   {name: 'store_dt', label: 'Zeta save interval (minutes)', value: 60},
   {name: 'tide_amplitude', label: 'Tide amplitude (meters)', value: 0.6},
   {name: 'tide_phase', label: 'Tide phase (degree)', value: 0},
+  {name: 'zeta0', label: 'Zeta0', value: 0},
 ]
 
 export const RunProgram = () => {
@@ -29,6 +30,7 @@ type RunConfig = {
   store_dt: number
   tide_amplitude: number
   tide_phase: number
+  zeta0: number
 }
 type RunFormData = Iterable<[keyof RunConfig, string]>
 

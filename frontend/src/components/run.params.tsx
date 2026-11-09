@@ -47,6 +47,11 @@ export const RunParams = () => {
             <td>{params.tide_phase}</td>
             <td>radians</td>
           </tr>
+          <tr>
+            <th>Zeta0</th>
+            <td>{params.zeta0}</td>
+            <td>meters</td>
+          </tr>
         </tbody>
       </table>
     )

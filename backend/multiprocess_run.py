@@ -22,6 +22,7 @@ def start(grid: Grid, grid_params: GridParams, run_params: RunParams, storm: Sto
             IncludeFlags(tide=True, surge=True),
             IncludeFlags(tide=False, surge=True),
             IncludeFlags(tide=True, surge=False),
+            IncludeFlags(tide=False, surge=False),
         )
     ):
         p = Process(target=main, args=(grid, grid_params, run_params, storm, include, i))

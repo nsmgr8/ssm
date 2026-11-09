@@ -14,11 +14,12 @@ type Zetas = {
   both: ZetaData[]
   surge: ZetaData[]
   tide: ZetaData[]
+  none: ZetaData[]
 }
 export type RunType = keyof Zetas
-export const runTypes: RunType[] = ['both', 'surge', 'tide']
+export const runTypes: RunType[] = ['both', 'surge', 'tide', 'none']
 
-const initialZeta = {both: [], surge: [], tide: []}
+const initialZeta = {both: [], surge: [], tide: [], none: []}
 
 export const resetZeta = () => {
   zetas.value = initialZeta
@@ -73,6 +74,7 @@ export const peak = computed(() => {
     both: {location: [], value: -10000},
     surge: {location: [], value: -10000},
     tide: {location: [], value: -10000},
+    none: {location: [], value: -10000},
   } as Record<RunType, {location: [number, number] | never[]; value: number}>
 
   runTypes.forEach((key) => {
